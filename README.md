@@ -15,3 +15,5 @@ to Python allows the algorithm to be run without using MATLAB licensed software 
 with AntennaCAT software written by Lauren Linkous at VCU. Much of the code is a direct translation and 
 as such is GPL 3.0 like MultiGLODS before it. Please include the license with any derivative work, and 
 please be sure to credit the original creators. 
+
+Requires Python 3.6 or later.
