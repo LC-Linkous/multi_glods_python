@@ -16,4 +16,8 @@ with AntennaCAT software written by Lauren Linkous at VCU. Much of the code is a
 as such is GPL 3.0 like MultiGLODS before it. Please include the license with any derivative work, and 
 please be sure to credit the original creators. 
 
+Due to the translation the majority of code is written in the proceedural style characteristic of most
+MATLAB code; however, it has been wrapped in a class in multi_glods.py with an example use case in 
+multiglods_test.py
+
 Requires Python 3.6 or later.
