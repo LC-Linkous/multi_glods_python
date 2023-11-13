@@ -17,7 +17,8 @@ def one_time_init(NO_OF_VARS, LB, UB, BP, GP, SF, TARGETS, TOL, MAXIT, obj_func)
     TARGETS = np.vstack(np.array(TARGETS))
 
     state = {'eval_done': 0, 'init': 1,
-             'post_init': 0, 'main_loop': {'run': 0, 'init': 1}}
+             'post_init': 0, 'main_loop': {'run': 0, 'init': 1},
+             'evaluate': 0, 'eval_return': 0, 'location': 1}
     alg = {'lbound': LB,
            'ubound': UB, 'targets': TARGETS, 'tol_stop': TOL,
            'beta_par': BP, 'gamma_par': GP, 'poll_complete': 0,
@@ -37,7 +38,7 @@ def one_time_init(NO_OF_VARS, LB, UB, BP, GP, SF, TARGETS, TOL, MAXIT, obj_func)
             'radius_ini': nn*max(alg['ubound']-alg['lbound']),
             'time': time.process_time(),
             'alfa': 0, 'radius': 0, 'active': 0, 'Plist': [],
-            'Psearch': [], 'xtemp': [], 'Ftemp': []}
+            'Psearch': [], 'xtemp': [], 'Ftemp': [], 'FValtemp': []}
 
     ctl = {'func_eval': 0, 'match': 0, 'func_iter': 0, 'eval': 0, 'finite': 0,
            'search_loop': 0, 'poll_loop': 0, 'i': 0, 'sel_level': 0,

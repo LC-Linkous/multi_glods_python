@@ -2,7 +2,7 @@
 import numpy as np
 import copy
 
-
+# check feasibility
 def feasible(x, ubound, lbound, n):
     feas = 1
     bound = np.array([[x - ubound], [lbound - x]])
@@ -11,12 +11,14 @@ def feasible(x, ubound, lbound, n):
 
     return feas
 
+# increment iteration
 def inc_iter(ctl, run_ctl):
     if not (ctl['poll_loop'] or ctl['search_loop']):
         run_ctl['iter'] = run_ctl['iter'] + 1
 
     return run_ctl
 
+# replicate 
 def replicate(v, M):
     if np.ndim(v) < 2:
         v = np.array([v])
@@ -32,6 +34,7 @@ def replicate(v, M):
 
     return M_new
 
+# logical indexing
 def logical_index_1d(log_idx, list_in):
     log_idx = copy.deepcopy(log_idx)
     list_out = copy.deepcopy(list_in)
@@ -68,6 +71,7 @@ def logical_index_1d(log_idx, list_in):
 
     return ret_list
 
+# logical indexing
 def logical_index_h2d(log_idx, list):
     log_idx = copy.deepcopy(log_idx)
     if np.shape(log_idx):
@@ -95,6 +99,7 @@ def logical_index_h2d(log_idx, list):
 
     return ret_list
 
+# logical indexing
 def logical_index_h2d_Plist(log_idx, list):
     log_idx = copy.deepcopy(log_idx)
     if np.shape(log_idx):
@@ -123,6 +128,7 @@ def logical_index_h2d_Plist(log_idx, list):
 
     return ret_list
 
+# logical indexing
 def logical_index_v2d(log_idx, list):
     log_idx = copy.deepcopy(log_idx)
     log_idx = log_idx.astype(int)
@@ -147,6 +153,7 @@ def logical_index_v2d(log_idx, list):
 
     return ret_list
 
+# set value from logical index
 def logical_set_val(log_idx, list, val):
     log_idx = copy.deepcopy(log_idx)
     log_idx = log_idx.astype(int)
@@ -173,6 +180,7 @@ def logical_set_val(log_idx, list, val):
 
     return ret_list
 
+# debug statement for multiglods main loop
 def print_debug(run_ctl, state, ctl, prob, init, alg, NO_OF_LOOPS, INSPECT_LOOP):
 
     if NO_OF_LOOPS == INSPECT_LOOP:
@@ -193,10 +201,27 @@ def print_debug(run_ctl, state, ctl, prob, init, alg, NO_OF_LOOPS, INSPECT_LOOP)
     NO_OF_LOOPS = NO_OF_LOOPS + 1
     return state, NO_OF_LOOPS
 
-def  f_eval(xlist, targets, obj_func):
+# mark objective function for evaluation
+def  f_eval(state, xlist, prob, location):
+    state['evaluate'] = 1
+    state['location'] = location
+    prob['xtemp'] = xlist   
+    return state, prob
+
+# handle objective function return at appropriate call location
+def f_eval_return(state, prob, alg, location):
+    if state['eval_return'] and (state['location'] == location):
+        state['eval_return'] = 0
+        prob['Ftemp'] = abs(alg['targets']-prob['FValtemp'])
         
-    Fvals = obj_func(xlist)
-    Flist = abs(targets - Fvals)
+    return state, prob
 
-    return Flist
-
+# call objective function, allow it to update when desired
+def f_eval_objective_call(state, prob, ctl, allow_update):
+    if state['evaluate']:
+        prob['FValtemp'] = ctl['obj_func'](prob['xtemp'])
+        if allow_update:
+            state['evaluate'] = 0
+            state['eval_return'] = 1
+    return state, prob
+ 
