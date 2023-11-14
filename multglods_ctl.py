@@ -356,5 +356,7 @@ def end_processing(prob, ctl, run_ctl):
     print(prob['Plist'])
     print("Iterations:")
     print(run_ctl['iter'])
-    print("Flist")
+    print("Flist:")
     print(ctl['Flist'])
+    print("Norm Flist:")
+    print(np.linalg.norm(ctl['Flist']))

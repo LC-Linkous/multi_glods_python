@@ -3,7 +3,8 @@ from multi_glods import multi_glods
 from func_F import func_F
 
 NO_OF_VARS = 3    # Number of input variables (x-values)
-TOL = 10 ** -3    # Convergence Tolerance
+TOL = 10 ** -3    # Convergence Tolerance (This is a radius 
+                  # based tolerance, not target based tolerance)
 LB = [0, 0, 0]    # Lower boundaries
 UB = [1, 1, 1]    # Upper Boundaries
 BP = 0.5          # Beta Par
