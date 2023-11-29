@@ -2,7 +2,7 @@
 Python translation of MATLAB MultiGLODS 0.1 (with random search method only)
 
 ## Translation of MultiGLODS to Python
-The original MultiGLODS 0.1 was is written in MATLAB by Dr. Ana Luise Custódio and 
+The original MultiGLODS 0.1 is written in MATLAB by Dr. Ana Luise Custódio and 
 J. F. A. Madeira at the Nova School of Science and Technology and at ISEL and IDMEC-IST, Lisbon
 respectively.  Please use the following references and complementary material:
 
