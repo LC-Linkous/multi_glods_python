@@ -18,6 +18,11 @@ please be sure to credit the original creators.
 
 Due to the translation the majority of code is written in the proceedural style characteristic of most
 MATLAB code; however, it has been wrapped in a class in multi_glods.py with an example use case in 
-multiglods_test.py
+multiglods_test.py.  Some configuration options (including certain search methods, and starting configurations)
+were not translated due to the MATLAB libraries these were implemented in (Pull requests with the functionality 
+returned would be appreciated if anyone has interests and time).
+
+This is not an actively maintained project and is provided with no waranty, may not be stable under all conditions
+or work as expected against all functions. 
 
 Requires Python 3.6 or later.
