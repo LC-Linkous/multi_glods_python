@@ -3,12 +3,13 @@ import numpy as np
 import copy
 
 # check feasibility
-def feasible(x, ubound, lbound, n):
+def feasible(x, ubound, lbound, n, ctl):
     feas = 1
     bound = np.array([[x - ubound], [lbound - x]])
     if np.sum(bound <= 0) != 2*n:
         feas = 0
-
+    if feas:
+        feas = ctl['constr_func'](x)
     return feas
 
 # increment iteration
@@ -219,7 +220,7 @@ def f_eval_return(state, prob, alg, location):
 # call objective function, allow it to update when desired
 def f_eval_objective_call(state, prob, ctl, allow_update):
     if state['evaluate']:
-        prob['FValtemp'] = ctl['obj_func'](prob['xtemp'])
+        prob['FValtemp'] = ctl['obj_func'](prob['parent'], prob['xtemp'])
         if allow_update:
             state['evaluate'] = 0
             state['eval_return'] = 1

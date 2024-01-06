@@ -1,16 +1,27 @@
 #! /usr/bin/python3
 import numpy as np
-import time
-from multiglods_helpers import feasible
-from multiglods_helpers import logical_index_1d
-from multiglods_helpers import logical_index_h2d
-from multiglods_helpers import logical_set_val
-from multiglods_alg import merge
-from multiglods_alg import select_pollcenter
 from numpy.random import default_rng
+import time
+
+#unit testing vs. program call
+try:
+    from multiglods_helpers import feasible
+    from multiglods_helpers import logical_index_1d
+    from multiglods_helpers import logical_index_h2d
+    from multiglods_helpers import logical_set_val
+    from multiglods_alg import merge
+    from multiglods_alg import select_pollcenter
+except:
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import feasible
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import logical_index_1d
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import logical_index_h2d
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import logical_set_val
+    from optimizers.GLODS.multi_glods_python.multiglods_alg import merge
+    from optimizers.GLODS.multi_glods_python.multiglods_alg import select_pollcenter
 
 
-def one_time_init(NO_OF_VARS, LB, UB, BP, GP, SF, TARGETS, TOL, MAXIT, obj_func):
+
+def one_time_init(NO_OF_VARS, LB, UB, BP, GP, SF, TARGETS, TOL, MAXIT, obj_func, constr_func):
     
     LB = np.vstack(np.array(LB))
     UB = np.vstack(np.array(UB))
@@ -38,11 +49,11 @@ def one_time_init(NO_OF_VARS, LB, UB, BP, GP, SF, TARGETS, TOL, MAXIT, obj_func)
             'radius_ini': nn*max(alg['ubound']-alg['lbound']),
             'time': time.process_time(),
             'alfa': 0, 'radius': 0, 'active': 0, 'Plist': [],
-            'Psearch': [], 'xtemp': [], 'Ftemp': [], 'FValtemp': []}
+            'Psearch': [], 'xtemp': [], 'Ftemp': [], 'FValtemp': [], 'Parent': []}
 
     ctl = {'func_eval': 0, 'match': 0, 'func_iter': 0, 'eval': 0, 'finite': 0,
            'search_loop': 0, 'poll_loop': 0, 'i': 0, 'sel_level': 0,
-           'Flist': [], 'D': [], 'count_d': [], 'nd': [], 'maxit': MAXIT, 'obj_func': obj_func}
+           'Flist': [], 'D': [], 'count_d': [], 'nd': [], 'maxit': MAXIT, 'obj_func': obj_func, 'constr_func': constr_func}
     init = []
     run_ctl = {'search_size': prob['n'], 'iter': 0,
                'iter_suc': 0, 'unsuc_consec': 0,
@@ -70,13 +81,13 @@ def post_objective_init_loop(state, ctl, prob, init, alg):
     if state['init'] and not np.shape(ctl['Flist'])[0] \
        and not (ctl['eval'] or ctl['match']) \
        and (ctl['i'] <= np.shape(prob['Pini'])[1]) \
-       and feasible(init['x_ini'], alg['ubound'], alg['lbound'], prob['n']):
+       and feasible(init['x_ini'], alg['ubound'], alg['lbound'], prob['n'], ctl):
         ctl['eval'] = 1
 
     if state['init'] and not np.shape(ctl['Flist'])[0] and ctl['eval']:
         if ctl['i'] <= np.shape(prob['Pini'])[1]:
             if feasible(init['x_ini'], alg['ubound'],
-                        alg['lbound'], prob['n']):
+                        alg['lbound'], prob['n'], ctl):
                 if not ctl['match']:
                     ctl['func_eval'] = ctl['func_eval'] + 1
                     ctl['func_iter'] = ctl['func_iter'] + 1
@@ -178,13 +189,13 @@ def post_objective_search(ctl, run_ctl, alg, prob):
     if run_ctl['search'] and not (ctl['poll_loop'] or
                                   ctl['finite'] or not np.shape(Psearch)[0]):
         if (ctl['i'] <= np.shape(Psearch)[1]) and \
-           feasible(xtemp, alg['ubound'], alg['lbound'], prob['n']) and \
+           feasible(xtemp, alg['ubound'], alg['lbound'], prob['n'], ctl) and \
            not ctl['match']:
             ctl['func_eval'] = ctl['func_eval'] + 1
             ctl['func_iter'] = ctl['func_iter'] + 1
 
         if (ctl['i'] <= np.shape(Psearch)[1]) and \
-           feasible(xtemp, alg['ubound'], alg['lbound'], prob['n']):
+           feasible(xtemp, alg['ubound'], alg['lbound'], prob['n'], ctl):
             if np.sum(np.isfinite(Ftemp), axis=0) == np.shape(Ftemp)[0]:
                 # This line may be a problem ******
                 ctl['finite'] = 1
@@ -268,12 +279,12 @@ def post_objective_poll(prob, ctl, run_ctl, alg):
     if sel_level and run_ctl['poll'] and not (ctl['search_loop']) and \
        ((count_d <= nd) and (alg['poll_complete'] or not run_ctl['success'])):
         if feasible(xtemp, alg['ubound'],
-                    alg['lbound'], prob['n']) and not ctl['match']:
+                    alg['lbound'], prob['n'], ctl) and not ctl['match']:
             ctl['func_eval'] = ctl['func_eval'] + 1
             ctl['func_iter'] = ctl['func_iter'] + 1
 
         if feasible(xtemp, alg['ubound'], alg['lbound'],
-                    prob['n']) and (np.sum(np.isfinite(Ftemp))
+                    prob['n'], ctl) and (np.sum(np.isfinite(Ftemp))
                                     == np.shape(Ftemp)[0]):
             run_ctl['success_aux'], prob['Plist'], ctl['Flist'], \
                prob['alfa'], prob['radius'], prob['active'], \

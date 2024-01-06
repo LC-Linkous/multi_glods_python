@@ -1,9 +1,17 @@
 #! /usr/bin/python3
 import numpy as np
-from multiglods_helpers import logical_index_1d
-from multiglods_helpers import logical_index_h2d
-from multiglods_helpers import logical_index_h2d_Plist
 import copy
+
+#unit testing vs. program call
+try:
+    from multiglods_helpers import logical_index_1d
+    from multiglods_helpers import logical_index_h2d
+    from multiglods_helpers import logical_index_h2d_Plist
+except:
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import logical_index_1d
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import logical_index_h2d
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import logical_index_h2d_Plist
+
 
 
 def match_point(x, xnorm, CacheP, CacheF, CachenormP, tol_match):

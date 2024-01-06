@@ -1,20 +1,39 @@
 #! /usr/bin/python3
 import numpy as np
-from multglods_ctl import pre_objective_init_loop
-from multiglods_helpers import feasible
-from multglods_ctl import post_objective_init_loop
-from multglods_ctl import post_init
-from multglods_ctl import run_no_search_no_poll
-from multglods_ctl import pre_objective_search
-from multglods_ctl import post_objective_search
-from multglods_ctl import pre_objective_poll
-from multglods_ctl import post_objective_poll
-from multglods_ctl import run_update
-from multglods_ctl import end_processing
-from multiglods_helpers import inc_iter
-from multiglods_helpers import f_eval
-from multiglods_helpers import f_eval_return
-from multiglods_helpers import print_debug
+
+#unit testing vs. program call
+try:
+    from multglods_ctl import pre_objective_init_loop
+    from multiglods_helpers import feasible
+    from multglods_ctl import post_objective_init_loop
+    from multglods_ctl import post_init
+    from multglods_ctl import run_no_search_no_poll
+    from multglods_ctl import pre_objective_search
+    from multglods_ctl import post_objective_search
+    from multglods_ctl import pre_objective_poll
+    from multglods_ctl import post_objective_poll
+    from multglods_ctl import run_update
+    from multglods_ctl import end_processing
+    from multiglods_helpers import inc_iter
+    from multiglods_helpers import f_eval
+    from multiglods_helpers import f_eval_return
+    from multiglods_helpers import print_debug
+except:
+    from optimizers.GLODS.multi_glods_python.multglods_ctl import pre_objective_init_loop
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import feasible
+    from optimizers.GLODS.multi_glods_python.multglods_ctl import post_objective_init_loop
+    from optimizers.GLODS.multi_glods_python.multglods_ctl import post_init
+    from optimizers.GLODS.multi_glods_python.multglods_ctl import run_no_search_no_poll
+    from optimizers.GLODS.multi_glods_python.multglods_ctl import pre_objective_search
+    from optimizers.GLODS.multi_glods_python.multglods_ctl import post_objective_search
+    from optimizers.GLODS.multi_glods_python.multglods_ctl import pre_objective_poll
+    from optimizers.GLODS.multi_glods_python.multglods_ctl import post_objective_poll
+    from optimizers.GLODS.multi_glods_python.multglods_ctl import run_update
+    from optimizers.GLODS.multi_glods_python.multglods_ctl import end_processing
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import inc_iter
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import f_eval
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import f_eval_return
+    from optimizers.GLODS.multi_glods_python.multiglods_helpers import print_debug
 
 def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
     
@@ -34,7 +53,7 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
         if state['init'] and not np.shape(ctl['Flist'])[0] \
            and not (ctl['eval'] or ctl['match']) and \
            (ctl['i'] <= np.shape(prob['Pini'])[1]) and \
-           feasible(init['x_ini'], alg['ubound'], alg['lbound'], prob['n']):
+           feasible(init['x_ini'], alg['ubound'], alg['lbound'], prob['n'], ctl):
             
             if not state['evaluate'] and not state['eval_return']:               
                 state, prob = f_eval(state, init['x_ini'], prob, 1)
@@ -64,7 +83,7 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
                                       (not np.shape(prob['Psearch'])[0])) \
            and (ctl['i'] <= np.shape(prob['Psearch'])[1]) and \
            feasible(prob['xtemp'], alg['ubound'], alg['lbound'],
-                    prob['n']) and not ctl['match']:
+                    prob['n'], ctl) and not ctl['match']:
             if not state['evaluate'] and not state['eval_return']:   
                 state, prob = f_eval(state, prob['xtemp'], prob, 2)
             else:
@@ -83,7 +102,7 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
             not (ctl['search_loop']) and ((ctl['count_d'] <= ctl['nd']) and
                                           (alg['poll_complete'] or not
                                            run_ctl['success'])) and \
-            feasible(prob['xtemp'], alg['ubound'], alg['lbound'], prob['n']) and \
+            feasible(prob['xtemp'], alg['ubound'], alg['lbound'], prob['n'], ctl) and \
            not ctl['match']: 
             if not state['evaluate'] and not state['eval_return']:
                 state, prob = f_eval(state, prob['xtemp'], prob, 3)
