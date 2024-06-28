@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   './multi_glods_python/src/multiglods_ctl.py'
 #   Constant values for objective function. Formatted for
 #       automating objective function integration
@@ -107,11 +107,6 @@ def post_objective_init_loop(state, ctl, prob, init, alg):
                     ctl['func_eval'] = ctl['func_eval'] + 1
                     ctl['func_iter'] = ctl['func_iter'] + 1
                     ctl['eval'] = 0
-
-                print("post_objective_init_loop in multiglods_ctl.py")
-                print("Ftemp")
-                print(Ftemp)
-
 
                 if np.sum(np.isfinite(Ftemp), axis=0) == np.shape(Ftemp)[0]:
                     if not np.shape(ctl['Flist'])[0]:

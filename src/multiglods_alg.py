@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   './multi_glods_python/src/configs_F.py'
 #   The main multiglods algorithm where the math happens
 #   NOTE: multiglods.py is the statemachine, 

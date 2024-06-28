@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   './multi_glods_python/src/multi_glods.py'
 #   Class for intializing and interfacing with the multiGLODS algorithm
 #   NOTE: multiglods.py is the statemachine, 
@@ -49,6 +49,25 @@ class multi_glods:
                 multiglods(self.init, self.run_ctl, self.alg, 
                            self.prob, self.ctl, self.state, 
                            suppress_output)
+        
+
+
+        # print("self.done")
+        # print(self.done)
+        # print("self.init")
+        # print(self.init)
+        # print("self.run_ctl")
+        # print(self.run_ctl)
+        # print("self.alg")
+        # print(self.alg)
+        # print("self.prob")
+        # print(self.prob)
+        # print("self.ctl")
+        # print(self.ctl)
+        # print("self.state")
+        # print(self.state)
+
+
     
     def call_objective(self, allow_update):
         self.state, self.prob = f_eval_objective_call(self.state, 
@@ -95,3 +114,13 @@ class multi_glods:
     def get_optimized_outs(self):
         soln = np.vstack(self.ctl['Flist'][:,0])
         return soln
+    
+
+    # for plotting
+    def get_search_locations(self):
+        x_locations = self.prob['Plist'] 
+        return x_locations
+
+    def get_fitness_values(self):
+        x_locations = self.ctl['Flist']
+        return x_locations
