@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   './multi_glods_python/src/main_test.py'
 #   Test function/example for using the multiglods optimizer. To match
 #       the format of the other optimizers in the AntennaCAT suite, this
@@ -27,8 +27,8 @@ except:# for local, unit testing
 
 # OBJECTIVE FUNCTION SELECTION
 #import one_dim_x_test.configs_F as func_configs     # single objective, 1D input
-import himmelblau.configs_F as func_configs         # single objective, 2D input
-#import lundquist_3_var.configs_F as func_configs     # multi objective function
+#import himmelblau.configs_F as func_configs         # single objective, 2D input
+import lundquist_3_var.configs_F as func_configs     # multi objective function
 
 
 if __name__ == "__main__":
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     # Objective function dependent variables
     LB = func_configs.LB[0]              # Lower boundaries, [[0.21, 0, 0.1]]
     UB = func_configs.UB[0]              # Upper boundaries, [[1, 1, 0.5]]
-    IN_VARS = func_configs.OUT_VARS                 # Number of input variables (x-values)   
+    IN_VARS = func_configs.IN_VARS                 # Number of input variables (x-values)   
     OUT_VARS = func_configs.OUT_VARS  # Number of output variables (y-values)
     TARGETS = func_configs.TARGETS    # Target values for output
 

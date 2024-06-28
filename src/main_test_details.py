@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   './multi_glods_python/src/main_test_details.py'
 #   Test function/example for using the 'swarm' class in particle_swarm.py.
 #       This has been modified from the original to include message 
@@ -14,67 +14,79 @@
 #   Last update: June 28, 2024
 ##--------------------------------------------------------------------\
 
-
-
 import numpy as np
 import time
-import configs_F as func_configs
+import matplotlib.pyplot as plt
+
+import sys
+# multiGLODS functions
+try: # for outside func calls, program calls
+    sys.path.insert(0, './multi_glods_python/src/')
+    from multi_glods import multi_glods
+
+except:# for local, unit testing
+    from multi_glods import multi_glods
+
+
+# OBJECTIVE FUNCTION SELECTION
+#import one_dim_x_test.configs_F as func_configs     # single objective, 1D input
+#import himmelblau.configs_F as func_configs         # single objective, 2D input
+import lundquist_3_var.configs_F as func_configs     # multi objective function
+
 
 
 
 class TestDetails():
     def __init__(self):
         # Constant variables
-        NO_OF_PARTICLES = 50         # Number of particles in swarm
-        T_MOD = 0.65                 # Variable time-step extinction coefficient
-        E_TOL = 10 ** -6             # Convergence Tolerance
-        MAXIT = 5000                 # Maximum allowed iterations
-        BOUNDARY = 1                 # int boundary 1 = random,      2 = reflecting
-                                    #              3 = absorbing,   4 = invisible
+        TOL = 10 ** -6      # Convergence Tolerance (This is a radius 
+                                # based tolerance, not target based tolerance)
+        MAXIT = 3000        # Maximum allowed iterations  
 
+        # Objective function dependent variables
+        LB = func_configs.LB[0]              # Lower boundaries, [[0.21, 0, 0.1]]
+        UB = func_configs.UB[0]              # Upper boundaries, [[1, 1, 0.5]]
+        IN_VARS = func_configs.IN_VARS      # Number of input variables (x-values)   
+        OUT_VARS = func_configs.OUT_VARS     # Number of output variables (y-values)
+        TARGETS = func_configs.TARGETS       # Target values for output
 
         # Objective function dependent variables
         func_F = func_configs.OBJECTIVE_FUNC  # objective function
         constr_F = func_configs.CONSTR_FUNC   # constraint function
 
-        LB = func_configs.LB              # Lower boundaries, [[0.21, 0, 0.1]]
-        UB = func_configs.UB              # Upper boundaries, [[1, 1, 0.5]]   
-        WEIGHTS = [[0.7, 1.5, 0.5]]       # Update vector weights
-        VLIM = 0.5                        # Initial velocity limit
-        OUT_VARS = func_configs.OUT_VARS  # Number of output variables (y-values)
-        TARGETS = func_configs.TARGETS    # Target values for output
 
-        # Swarm setting values
-        parent = self                 # Optional parent class for swarm 
+        # optimizer specific vars
+        BP = 0.5            # Beta Par
+        GP = 1              # Gamma Par
+        SF = 2              # Search Frequency
+
+        # optimizer setting values
+        parent = None                 # Optional parent class for optimizer
                                         # (Used for passing debug messages or
                                         # other information that will appear 
                                         # in GUI panels)
 
-        detailedWarnings = False      # Optional boolean for detailed feedback
+        self.best_eval = 1
+
+        self.suppress_output = True   # Suppress the console output of multiglods
 
 
-        # Swarm vars
-        self.best_eval = 1            # Starting eval value
-
-        parent = self                 # Optional parent class for swarm 
-                                        # (Used for passing debug messages or
-                                        # other information that will appear 
-                                        # in GUI panels)
-
-        self.suppress_output = True   # Suppress the console output of particle swarm
 
         detailedWarnings = False      # Optional boolean for detailed feedback
                                         # (Independent of suppress output. 
                                         #  Includes error messages and warnings)
 
         self.allow_update = True      # Allow objective call to update state 
+                                # (Can be set on each iteration to allow 
+                                # for when control flow can be returned 
+                                # to multiglods)   
 
 
-
-
-        self.mySwarm = swarm(NO_OF_PARTICLES, LB, UB,
-                        WEIGHTS, VLIM, OUT_VARS, TARGETS,
-                        T_MOD, E_TOL, MAXIT, BOUNDARY, func_F, constr_F, parent, detailedWarnings)  
+        # instantiation of multiglods optimizer 
+        self.optimizer = multi_glods(IN_VARS, LB, UB, TARGETS, TOL, MAXIT,
+                        func_F=func_F, constr_func=constr_F,
+                        BP=BP, GP=GP, SF=SF,
+                        parent=parent, detailedWarnings=detailedWarnings)
 
 
 
@@ -94,18 +106,16 @@ class TestDetails():
          
 
     def run(self):
-
-        # instantiation of particle swarm optimizer 
-        while not self.mySwarm.complete():
+        while not self.optimizer.complete():
 
             # step through optimizer processing
-            self.mySwarm.step(self.suppress_output)
+            self.optimizer.step(self.suppress_output)
 
             # call the objective function, control 
             # when it is allowed to update and return 
             # control to optimizer
-            self.mySwarm.call_objective(self.allow_update)
-            iter, eval = self.mySwarm.get_convergence_data()
+            self.optimizer.call_objective(self.allow_update)
+            iter, eval = self.optimizer.get_convergence_data()
             if (eval < self.best_eval) and (eval != 0):
                 self.best_eval = eval
             if self.suppress_output:
@@ -116,9 +126,9 @@ class TestDetails():
                     print(self.best_eval)
 
         print("Optimized Solution")
-        print(self.mySwarm.get_optimized_soln())
+        print(self.optimizer.get_optimized_soln())
         print("Optimized Outputs")
-        print(self.mySwarm.get_optimized_outs())
+        print(self.optimizer.get_optimized_outs())
 
 
 
