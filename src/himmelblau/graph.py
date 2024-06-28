@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##-------------------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   '.src/himmelblau/graph.py'
 #   generates graphs for function based on constraints and configurations
 #

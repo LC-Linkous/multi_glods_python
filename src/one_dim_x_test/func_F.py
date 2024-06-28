@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##-------------------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   '.src/one_dim_x_test/func_F.py'
 #   objective function for function compatable with project optimizers
 #

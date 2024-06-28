@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   '.src/lundquist_3_var/func_F.py'
 #   Function for objective function evaluation.
 #   Has checks for floating point error, but these should never trigger

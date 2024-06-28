@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   '.src/lundquist_3_var/constr_default.py'
 #   Function for default constraints. Called if user does not pass in 
 #       constraints for objective function or problem being optimized. 

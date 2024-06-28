@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##-------------------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   '.src/lundquist_3_var/graph.py'
 #   generates graphs for function based on constraints and configurations
 #   in-package demo for graphing the pareto front

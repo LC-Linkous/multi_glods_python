@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##-------------------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   '.src/himmelblau/func_F.py'
 #   objective function for function compatable with project optimizers
 #
@@ -17,7 +17,7 @@ def func_F(X, NO_OF_OUTS=1):
     try:
         x = X[0]
         y = X[1]   
-        F = (x**2 + y - 11)**2 + (x + y**2 - 7)**2
+        F[0] = (x**2 + y - 11)**2 + (x + y**2 - 7)**2
     except:
         noErrors = False
 

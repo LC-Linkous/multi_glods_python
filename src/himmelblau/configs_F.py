@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##-------------------------------------------------------------------------------\
-#   multi_glods_python
+#   multi_glods_antennaCAT
 #   '.src/himmelblau/configs_F.py'
 #   configurations for function compatable with project optimizers
 #
