@@ -2,18 +2,11 @@
 
 Python-based MultiGLODS optimizer compatable with the [AntennaCAT](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool) optimizer suite.  This has been forked & modified from [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by [jonathan46000](https://github.com/jonathan46000).  Now featuring AntennaCAT hooks for GUI integration and user input handling.
 
-The [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by [jonathan46000](https://github.com/jonathan46000), is a Python translation of MATLAB MultiGLODS 0.1 (with random search method only). Please see the []() and []() sections for more information about the translation of the code and the original publication.
-
-
-# IN PROGRESS!! Currently undergoing a major reformat for paths, comments, and documentation.
-For consistency across optimizers, files have been pulled from other files in LC-Linkous's optimizer 
-collection for AntennaCAT. This project does not currently work due to all of the path breakage 
-but a backup was needed during the restructure
-
+The [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by [jonathan46000](https://github.com/jonathan46000), is a Python translation of MATLAB MultiGLODS 0.1 (with random search method only). Please see the [MultiGLODS](#multiglods) and [Translation of MultiGLODS to Python](#translation-of-multiglods-to-python) sections for more information about the translation of the code and the original publication.
 
 ## Table of Contents
 * [MultiGLODS](#multiglods)
-* [Translation of MultiGLODS to Python](#)
+* [Translation of MultiGLODS to Python](#translation-of-multiglods-to-python)
 * [Requirements](#requirements)
 * [Implementation](#implementation)
     * [Constraint Handling](#constraint-handling)
@@ -29,7 +22,6 @@ but a backup was needed during the restructure
 
 ## MultiGLODS
 
-
 The Multiobjective Optimization Global and Local Optimization using Direct Search (MultiGLODS) [1] is an algorith created by Dr. Ana Luise Custódio (Nova School of Science and Technology, Lisbon) and J. F. A. Madeira (ISEL and IDMEC-IST, Lisbon). It is a derivative-free optimizizer generalized for calculating the Pareto fronts of multiobjective multimodal derivative-free optimization problems. It builds off their GLODS algorithm in [2]. 
 
 Some key points of this algorithm are:
@@ -41,7 +33,7 @@ Some key points of this algorithm are:
 
 
 ## Translation of MultiGLODS to Python
-From the [multi_glods_python README:](https://github.com/jonathan46000/multi_glods_python/blob/main/README.md)
+From the main branch [multi_glods_python README:](https://github.com/jonathan46000/multi_glods_python/blob/main/README.md)
 
 The original MultiGLODS 0.1 is written in MATLAB by Dr. Ana Luise Custódio and 
 J. F. A. Madeira at the Nova School of Science and Technology and at ISEL and IDMEC-IST, Lisbon
@@ -107,7 +99,7 @@ Each function has four files in a directory:
 
 
 <p align="center">
-        <img src="https://github.com/LC-Linkous/bayesian_optimization_python/blob/main/media/himmelblau_plots.png" alt="Himmelblau function" height="250">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/himmelblau_plots.png" alt="Himmelblau function" height="250">
 </p>
    <p align="center">Plotted Himmelblau Function with 3D Plot on the Left, and a 2D Contour on the Right</p>
 
@@ -126,7 +118,7 @@ f(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
 
 
 <p align="center">
-        <img src="https://github.com/LC-Linkous/bayesian_optimization_python/blob/main/media/lundquist_3var_plots.png" alt="Function Feasible Decision Space and Objective Space with Pareto Front" height="200">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/lundquist_3var_plots.png" alt="Function Feasible Decision Space and Objective Space with Pareto Front" height="200">
 </p>
    <p align="center">Plotted Multi-Objective Function Feasible Decision Space and Objective Space with Pareto Front</p>
 
@@ -145,7 +137,7 @@ f_{2}(\mathbf{x}) = (x_3-0.2)^4
 
 
 <p align="center">
-        <img src="https://github.com/LC-Linkous/bayesian_optimization_python/blob/main/media/1D_test_plots.png" alt="Function Feasible Decision Space and Objective Space with Pareto Front" height="200">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/1D_test_plots.png" alt="Function Feasible Decision Space and Objective Space with Pareto Front" height="200">
 </p>
    <p align="center">Plotted Single Input, Single-objective Function Feasible Decision Space and Objective Space with Pareto Front</p>
 
@@ -161,31 +153,31 @@ main_test.py provides a sample use case of the optimizer with tunable parameters
 ### Realtime Graph
 
 <p align="center">
-        <img src="https://github.com/LC-Linkous/bayesian_optimization_python/blob/main/media/surrogate_model_progress.gif" alt="gif of surrogate model development through iterations" height="325">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/himmelblau_search.gif" alt="gif of optimization model development through iterations" height="325">
 </p>
-<p align="center">Bayesian Optimization with a Gaussian Proccess Using Himmelblau. Left to Right: Objective function ground truth, areas of interest to the optimizer, and surrogate model development process.</p>
+<p align="center"> MultiGLODS Optimization on Himmelblau's Function. Left, the Search Location. Right, the Current Global Best Fitness Compared to Target</p>
 
 <br>
 <br>
 <p align="center">
-        <img src="https://github.com/LC-Linkous/bayesian_optimization_python/blob/main/media/surrogate_model_1X.gif" alt="gif of surrogate model development through iterations" height="325">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/1D_test_search.gif" alt="gif of optimization development through iterations" height="325">
 </p>
-<p align="center">Bayesian Optimization with a Gaussian Proccess Using Single Input, Single Objective Function. Left, Gaussian Process Regression Model. Right: Aquisition Function.</p>
+<p align="center">MultiGLODS Optimization on a Single Objective Function with 1 Inputs and 1 Output. Left, the Search Location. Right, the Current Global Best Fitness Compared to Target</p>
 
 <br>
 <br>
 
 <p align="center">
-        <img src="https://github.com/LC-Linkous/bayesian_optimization_python/blob/main/media/surrogate_model_multi_obj.gif" alt="gif of surrogate model development through iterations" height="325">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/multi_obj_search.gif" alt="gif of optimization model development through iterations" height="325">
 </p>
-<p align="center">Bayesian Optimization with a Gaussian Proccess Using Multi-Objective Function. Left, Objective Function Output and Sampling. Right, Surrogate Model GP Mean Fitting and Sample Points.</p>
+<p align="center">MultiGLODS Optimization on a Multi Objective Function with 3 Inputs and 2 Outputs. Left, the Search Location. Right, the Current Global Best Fitness Compared to Target</p>
 
 <br>
 <br>
 
 main_test_graph.py provides an example using a parent class, and the self.suppress_output and detailedWarnings flags to control error messages that are passed back to the parent class to be printed with a timestamp. Additionally, a realtime graph shows particle locations at every step.
 
-The figure above shows a low-resolution version of the optimization for example. In this first figure, the Far left plot is the objective ground truth function with sample locations in red. The center plot is the expected improvement, which highlights areas of interest to the optimizer. The far right plot is the current shape of the surrogate model, with sampled points from the ground truth in red. The other two graphs present a similar process for different dimensions of objective functions.
+The figure above shows samples of the MultiGLODS optimizer searching each of the three included example objective functions. In all figures in this section, the left plot shows the current search location(s), and the right shows the history of the global best fitness values (the black circles) in relation to the target (the red star). The three graphs present a similar process for different dimensions of objective functions.
 
 
 NOTE: if you close the graph as the code is running, the code will continue to run, but the graph will not re-open.
@@ -207,7 +199,6 @@ When citing the algorithm itself, please refer to the original publication for M
 
 A. L. Custódio and J. F. A. Madeira, MultiGLODS: Global and Local Multiobjective 
 Optimization using Direct Search, Journal of Global Optimization, 72 (2018), 323 - 345 PDF
-
 
 
 
