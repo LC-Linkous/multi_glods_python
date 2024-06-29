@@ -102,7 +102,7 @@ class TestGraph():
         self.fig = plt.figure(figsize=(10, 5))#(figsize=(14, 7))
         # position
         self.ax1 = self.fig.add_subplot(121, projection='3d')
-        self.ax1.set_title("Search Location, Iteration: " + str(self.ctr))
+        self.ax1.set_title("Search Locations, Iteration: " + str(self.ctr))
         self.ax1.set_xlabel('X')
         self.ax1.set_ylabel('Y')
         self.ax1.set_zlabel('Z')
@@ -134,7 +134,7 @@ class TestGraph():
         pass
          
 
-    def update_plot(self, x_coords, y_coords, targets, showTarget, clearAx=True, setLimts=False):
+    def update_plot(self, x_coords, y_coords, targets, showTarget=True, clearAx=True):
         
         # check if any points. first call might not have anythign set yet.
         if len(x_coords) < 1:
@@ -144,24 +144,23 @@ class TestGraph():
         if clearAx == True:
             self.ax1.clear() #use this to git rid of the 'ant tunnel' trails
             self.ax2.clear()
-        if setLimts == True:
-            self.ax1.set_xlim(-5, 5)
-            self.ax1.set_ylim(-5, 5)
-            self.ax1.set_zlim(-5, 5)
-            
-            self.ax2.set_xlim(-5, 5)
-            self.ax2.set_ylim(-5, 5)
-            self.ax2.set_zlim(-5, 5)
-        
+
         # MOVEMENT PLOT
-        if np.shape(x_coords)[1] == 2: #2-dim func
-            self.ax1.set_title("Particle Location, Objective Call Iteration: " + str(self.ctr))
+        if np.shape(x_coords)[1]==1: # 1 dim function
+            x_plot_coords = np.array(x_coords[:,0])*0.0
+            self.ax1.set_title("Search Locations, Iteration: " + str(self.ctr))
+            self.ax1.set_xlabel("$x_1$")
+            self.ax1.set_ylabel("filler coords")
+            self.scatter = self.ax1.scatter(x_coords, x_plot_coords, edgecolors='b')   
+        
+        elif np.shape(x_coords)[1] == 2: #2-dim func
+            self.ax1.set_title("Search Locations, Iteration: " + str(self.ctr))
             self.ax1.set_xlabel("$x_1$")
             self.ax1.set_ylabel("$x_2$")
             self.scatter = self.ax1.scatter(x_coords[:,0], x_coords[:,1], edgecolors='b')
 
         elif np.shape(x_coords)[1] == 3: #3-dim func
-            self.ax1.set_title("Particle Location, Iteration: " + str(self.ctr))
+            self.ax1.set_title("Search Locations, Iteration: " + str(self.ctr))
             self.ax1.set_xlabel("$x_1$")
             self.ax1.set_ylabel("$x_2$")
             self.ax1.set_zlabel("$x_3$")
@@ -169,7 +168,14 @@ class TestGraph():
 
 
         # FITNESS PLOT
-        if np.shape(y_coords)[1] == 2: #2-dim obj func
+        if np.shape(y_coords)[1] == 1: #1-dim obj func
+            y_plot_filler = np.array(y_coords[:,0])*0.0
+            self.ax2.set_title("Global Best Fitness Relation to Target")
+            self.ax2.set_xlabel("$F_{1}(x,y)$")
+            self.ax2.set_ylabel("filler coords")
+            self.scatter = self.ax2.scatter(y_coords, y_plot_filler,  marker='o', s=40, facecolor="none", edgecolors="k")
+
+        elif np.shape(y_coords)[1] == 2: #2-dim obj func
             self.ax2.set_title("Global Best Fitness Relation to Target")
             self.ax2.set_xlabel("$F_{1}(x,y)$")
             self.ax2.set_ylabel("$F_{2}(x,y)$")

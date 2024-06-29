@@ -246,5 +246,7 @@ def f_eval_objective_call(state, prob, ctl, allow_update):
         if allow_update:
             state['evaluate'] = 0
             state['eval_return'] = 1
+            ctl['objective_iter'] = ctl['objective_iter']  + 1
+
     return state, prob
  

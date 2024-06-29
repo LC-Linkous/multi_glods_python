@@ -66,7 +66,7 @@ def one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
             'alfa': 0, 'radius': 0, 'active': 0, 'Plist': [],
             'Psearch': [], 'xtemp': [], 'Ftemp': [], 'FValtemp': [], 'Parent': []}
 
-    ctl = {'func_eval': 0, 'match': 0, 'func_iter': 0, 'eval': 0, 'finite': 0,
+    ctl = {'func_eval': 0, 'match': 0, 'func_iter': 0, 'objective_iter': 0, 'eval': 0, 'finite': 0,
            'search_loop': 0, 'poll_loop': 0, 'i': 0, 'sel_level': 0,
            'Flist': [], 'D': [], 'count_d': [], 'nd': [], 'maxit': MAXIT, 'obj_func': obj_func, 'constr_func': constr_func}
     init = []

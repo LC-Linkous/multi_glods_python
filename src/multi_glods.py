@@ -51,7 +51,6 @@ class multi_glods:
                            suppress_output)
         
 
-
         # print("self.done")
         # print(self.done)
         # print("self.init")
@@ -66,7 +65,6 @@ class multi_glods:
         # print(self.ctl)
         # print("self.state")
         # print(self.state)
-
 
     
     def call_objective(self, allow_update):
@@ -104,8 +102,14 @@ class multi_glods:
             best_eval = np.linalg.norm(self.ctl['Flist'][:,0])
         else:
             best_eval = np.linalg.norm(self.ctl['Flist'])
-        iteration = 1*self.run_ctl['iter']
-        return iteration, best_eval
+
+        # return iteration for objective function call.
+        #  There's several 'iter' counters.
+        #  self.run_ctl['iter'] : 
+        #  self.ctl['objective_iter'] : objective func call counter   
+    
+        iteration = 1*self.ctl['objective_iter']
+        return iteration, best_eval 
 
     def get_optimized_soln(self):
         soln = np.vstack(self.prob['Plist'][:,0])
