@@ -223,7 +223,7 @@ class TestGraph():
                 self.best_eval = eval
             if self.suppress_output:
                 if iter%100 ==0: #print out every 100th iteration update
-                    print("Iteration")
+                    print("Objective Function Call Iterations")
                     print(iter)
                     print("Best Eval")
                     print(self.best_eval)

@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
         if (eval < best_eval) and (eval != 0):
             best_eval = eval
-        print("Iteration")
+        print("Objective Function Call Iterations")
         print(iter)
         print("Best Eval")
         print(best_eval)
