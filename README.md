@@ -1,6 +1,6 @@
 # multi_glods_antennaCAT
 
-Python-based MultiGLODS optimizer compatable with the [AntennaCAT](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool) optimizer suite.  This has been forked & modified from [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by [jonathan46000](https://github.com/jonathan46000).  Now featuring AntennaCAT hooks for GUI integration and user input handling.
+Python-based MultiGLODS optimizer compatible with the [AntennaCAT](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool) optimizer suite.  This has been forked & modified from [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by [jonathan46000](https://github.com/jonathan46000).  Now featuring AntennaCAT hooks for GUI integration and user input handling.
 
 The [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by [jonathan46000](https://github.com/jonathan46000), is a Python translation of MATLAB MultiGLODS 0.1 (with random search method only). Please see the [MultiGLODS](#multiglods) and [Translation of MultiGLODS to Python](#translation-of-multiglods-to-python) sections for more information about the translation of the code and the original publication.
 
@@ -19,17 +19,15 @@ The [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by
 * [Licensing](#licensing)  
 
 
-
 ## MultiGLODS
 
-The Multiobjective Optimization Global and Local Optimization using Direct Search (MultiGLODS) [1] is an algorith created by Dr. Ana Luise Custódio (Nova School of Science and Technology, Lisbon) and J. F. A. Madeira (ISEL and IDMEC-IST, Lisbon). It is a derivative-free optimizizer generalized for calculating the Pareto fronts of multiobjective multimodal derivative-free optimization problems. It builds off their GLODS algorithm in [2]. 
+The Multiobjective Optimization Global and Local Optimization using Direct Search (MultiGLODS) [1] is an algorithm created by Dr. Ana Luise Custódio (Nova School of Science and Technology, Lisbon) and J. F. A. Madeira (ISEL and IDMEC-IST, Lisbon). It is a derivative-free optimizer generalized for calculating the Pareto fronts of multiobjective multimodal derivative-free optimization problems. It builds off their GLODS algorithm in [2]. 
 
 Some key points of this algorithm are:
 
 * "The proposed algorithm alternates between initializing new searches, using a multistart strategy, and exploring promising subregions, resorting to directional direct search. Components of the objective function are not aggregated and new points are accepted using the concept of Pareto dominance. The initialized searches are not all conducted until the end, merging when they start to be close to each other. The convergence of the method is analyzed under the common assumptions of directional direct search. Numerical experiments show its ability to generate approximations to the different Pareto fronts of a given problem." [1]
 
 * "Points sufficiently close to each other are compared and only nondominated points will remain active. In the end of the optimization process, the set of all active points will define the approximations to the Pareto fronts of the problem (local and global)." [1]
-
 
 
 ## Translation of MultiGLODS to Python
@@ -49,7 +47,7 @@ with AntennaCAT software written by Lauren Linkous at VCU. Much of the code is a
 as such is GPL 3.0 like MultiGLODS before it. Please include the license with any derivative work, and 
 please be sure to credit the original creators. 
 
-Due to the translation the majority of code is written in the proceedural style characteristic of most
+Due to the translation the majority of code is written in the procedural style characteristic of most
 MATLAB code; however, it has been wrapped in a class in multi_glods.py with an example use case in 
 multiglods_test.py
 
@@ -76,12 +74,10 @@ zipp==3.18.1
 
 ```
 
-
 ## Implementation
 
 ### Constraint Handling
 Users must create their own constraint function for their problems, if there are constraints beyond the problem bounds.  This is then passed into the constructor. If the default constraint function is used, it always returns true (which means there are no constraints).
-
 
 ### Internal Objective Function Examples
 
@@ -95,7 +91,6 @@ Each function has four files in a directory:
    2) constr_F.py - contains a function with the problem constraints, both for the function and for error handling in the case of under/overflow. 
    3) func_F.py - contains a function with the objective function.
    4) graph.py - contains a script to graph the function for visualization.
-
 
 
 <p align="center">
@@ -116,7 +111,6 @@ f(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
 
 
 
-
 <p align="center">
         <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/lundquist_3var_plots.png" alt="Function Feasible Decision Space and Objective Space with Pareto Front" height="200">
 </p>
@@ -133,7 +127,6 @@ f_{2}(\mathbf{x}) = (x_3-0.2)^4
 | Num. Input Variables| Boundary | Constraints |
 |----------|----------|----------|
 | 3      | $0.21\leq x_1\leq 1$ <br> $0\leq x_2\leq 1$ <br> $0.1 \leq x_3\leq 0.5$  | $x_3\gt \frac{x_1}{2}$ or $x_3\lt 0.1$| 
-
 
 
 <p align="center">
@@ -179,9 +172,7 @@ main_test_graph.py provides an example using a parent class, and the self.suppre
 
 The figure above shows samples of the MultiGLODS optimizer searching each of the three included example objective functions. In all figures in this section, the left plot shows the current search location(s), and the right shows the history of the global best fitness values (the black circles) in relation to the target (the red star). The three graphs present a similar process for different dimensions of objective functions.
 
-
 NOTE: if you close the graph as the code is running, the code will continue to run, but the graph will not re-open.
-
 
 
 ## References
@@ -189,7 +180,6 @@ NOTE: if you close the graph as the code is running, the code will continue to r
 [1] A. L. Custódio and J. F. A. Madeira, “MultiGLODS: global and local multiobjective optimization using direct search,” Journal of Global Optimization, vol. 72, no. 2, pp. 323–345, Feb. 2018, doi: https://doi.org/10.1007/s10898-018-0618-1.
 
 [2] A. L. Custódio and J. F. A. Madeira, “GLODS: Global and Local Optimization using Direct Search,” Journal of Global Optimization, vol. 62, no. 1, pp. 1–28, Aug. 2014, doi: https://doi.org/10.1007/s10898-014-0224-9.
-
 
 
 ## Publications and Integration
@@ -201,10 +191,10 @@ A. L. Custódio and J. F. A. Madeira, MultiGLODS: Global and Local Multiobjectiv
 Optimization using Direct Search, Journal of Global Optimization, 72 (2018), 323 - 345 PDF
 
 
-
 ## Licensing
 
 Unlike other optimizers in the AntennaCAT suite, which were released under GPL-2.0, this work is licensed
 under GPL-3.0 per the license used by the original authors of the MultiGLODS algorithm. 
+
 
 
