@@ -92,6 +92,8 @@ Each function has four files in a directory:
    3) func_F.py - contains a function with the objective function.
    4) graph.py - contains a script to graph the function for visualization.
 
+Other multi-objective functions can be applied to this project by following the same format (and several have been collected into a compatible library, and will be released in a separate repo)
+
 
 <p align="center">
         <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/himmelblau_plots.png" alt="Himmelblau function" height="250">
