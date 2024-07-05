@@ -241,15 +241,15 @@ def f_eval_objective_call(state, prob, ctl, allow_update):
         # print("SHAPE FVALS in multiglods_holders")
         # print(FVals)
         # print(np.shape(FVals))
-        prob['FValtemp'] = np.array(FVals).reshape(-1, 1)
-        # print(prob['FValtemp'])
-        # print(np.shape(prob['FValtemp']))       
-
-        if noErrorBool == False:
+        if noErrorBool == True:
+            prob['FValtemp'] = np.array(FVals).reshape(-1, 1)
+            # print(prob['FValtemp'])
+            # print(np.shape(prob['FValtemp']))   
+            # adjust the fitness values output to be vertical to match multiGLODS expecations
+            prob['FValtemp'] = np.vstack(prob['FValtemp'])    
+        else:
             print("ERROR: error in evaluation of the objective function. Check evaluation")
 
-        # adjust the fitness values output to be vertical to match multiGLODS expecations
-        prob['FValtemp'] = np.vstack(prob['FValtemp'])
 
         if allow_update:
             state['evaluate'] = 0

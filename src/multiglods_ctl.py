@@ -372,12 +372,11 @@ def run_update(run_ctl, ctl, prob, alg, state):
 
     # NOTE: this is a change from the original version of
     # MultiGLODS. Originally the counter was set to check
-    # if ctl['func_iter'] >= ctl['func_iter']
+    # if ctl['func_iter'] >= ctl['maxit']
     # ['func_iter'] is a function iteration, but not how 
     # how many times the objective function has been called. 
 
-    if ctl['func_iter'] >= ctl['objective_iter']:
-
+    if ctl['objective_iter'] >= ctl['maxit']:
         state['main_loop']['run'] = 0
 
     return run_ctl, prob, state

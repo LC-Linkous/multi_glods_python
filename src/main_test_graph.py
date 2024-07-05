@@ -49,7 +49,7 @@ class TestGraph():
         # Constant variables
         TOL = 10 ** -6      # Convergence Tolerance (This is a radius 
                                 # based tolerance, not target based tolerance)
-        MAXIT = 3000        # Maximum allowed iterations  
+        MAXIT = 10000        # Maximum allowed iterations  
 
         # Objective function dependent variables
         LB = func_configs.LB[0]              # Lower boundaries, [[0.21, 0, 0.1]]
@@ -223,7 +223,7 @@ class TestGraph():
             # control to optimizer
             self.optimizer.call_objective(self.allow_update)
             iter, eval = self.optimizer.get_convergence_data()
-            if (eval < self.best_eval):
+            if (eval < self.best_eval) and (eval != 0):
                 self.best_eval = eval
             if iter > last_iter:
                 last_iter = iter
@@ -238,6 +238,8 @@ class TestGraph():
             self.update_plot(x_coords, y_coords, self.targets, last_iter, showTarget=True, clearAx=True) #update matplot
 
         print("************************************************")
+        print("Objective Function Iterations: " + str (iter))
+        print("Best Eval: " + str(self.best_eval))
         print("Optimized Solution")
         print(self.optimizer.get_optimized_soln())
         print("Optimized Outputs")

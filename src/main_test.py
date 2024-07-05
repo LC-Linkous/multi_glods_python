@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # Constant variables
     TOL = 10 ** -6      # Convergence Tolerance (This is a radius 
                             # based tolerance, not target based tolerance)
-    MAXIT = 3           # Maximum allowed iterations  
+    MAXIT = 10000       # Maximum allowed iterations  
 
     # Objective function dependent variables
     LB = func_configs.LB[0]              # Lower boundaries, [[0.21, 0, 0.1]]
@@ -98,6 +98,8 @@ if __name__ == "__main__":
         # control to optimizer
         myGlods.call_objective(allow_update)
         iter, eval = myGlods.get_convergence_data()
+        if (eval < best_eval) and (eval != 0):
+            best_eval = eval
         if iter > last_iter:
             last_iter = iter
             if suppress_output:
@@ -107,6 +109,8 @@ if __name__ == "__main__":
                     print("Best Eval: " + str(best_eval))
 
     print("************************************************")
+    print("Objective Function Iterations: " + str (iter))
+    print("Best Eval: " + str(best_eval))
     print("Optimized Solution")
     print(myGlods.get_optimized_soln())
     print("Optimized Outputs")
