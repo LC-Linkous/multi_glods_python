@@ -12,7 +12,7 @@
 #       passing back to the parent class or testbench, rather than printing
 #       error messages directly from the 'multiglods' class. 
 
-#       This version builds from 'main_test_details.py' to include a 
+#       This version builds from 'main_test.py' to include a 
 #       matplotlib plot of particle location
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
@@ -134,7 +134,7 @@ class TestGraph():
         pass
          
 
-    def update_plot(self, x_coords, y_coords, targets, showTarget=True, clearAx=True):
+    def update_plot(self, x_coords, y_coords, targets, last_iter, showTarget=True, clearAx=True):
         
         # check if any points. first call might not have anythign set yet.
         if len(x_coords) < 1:
@@ -148,19 +148,22 @@ class TestGraph():
         # MOVEMENT PLOT
         if np.shape(x_coords)[1]==1: # 1 dim function
             x_plot_coords = np.array(x_coords[:,0])*0.0
-            self.ax1.set_title("Search Locations, Iteration: " + str(self.ctr))
+            title_txt = "Search Locations, Step: " + str(self.ctr) + ", Objective Iter: " + str(last_iter)
+            self.ax1.set_title(title_txt)
             self.ax1.set_xlabel("$x_1$")
             self.ax1.set_ylabel("filler coords")
             self.scatter = self.ax1.scatter(x_coords, x_plot_coords, edgecolors='b')   
         
         elif np.shape(x_coords)[1] == 2: #2-dim func
-            self.ax1.set_title("Search Locations, Iteration: " + str(self.ctr))
+            title_txt = "Search Locations, Step: " + str(self.ctr) + ", Objective Iter: " + str(last_iter)
+            self.ax1.set_title(title_txt)
             self.ax1.set_xlabel("$x_1$")
             self.ax1.set_ylabel("$x_2$")
             self.scatter = self.ax1.scatter(x_coords[:,0], x_coords[:,1], edgecolors='b')
 
         elif np.shape(x_coords)[1] == 3: #3-dim func
-            self.ax1.set_title("Search Locations, Iteration: " + str(self.ctr))
+            title_txt = "Search Locations, Step: " + str(self.ctr) + ", Objective Iter: " + str(last_iter)
+            self.ax1.set_title(title_txt)
             self.ax1.set_xlabel("$x_1$")
             self.ax1.set_ylabel("$x_2$")
             self.ax1.set_zlabel("$x_3$")
@@ -208,7 +211,8 @@ class TestGraph():
 
     def run(self):
 
-
+        # sometimes multiGLODS doesn't call the objective function, so only print out when it does
+        last_iter = 0
         while not self.optimizer.complete():
 
             # step through optimizer processing
@@ -219,19 +223,21 @@ class TestGraph():
             # control to optimizer
             self.optimizer.call_objective(self.allow_update)
             iter, eval = self.optimizer.get_convergence_data()
-            if (eval < self.best_eval) and (eval != 0):
+            if (eval < self.best_eval):
                 self.best_eval = eval
-            if self.suppress_output:
-                if iter%100 ==0: #print out every 100th iteration update
-                    print("Objective Function Call Iterations")
-                    print(iter)
-                    print("Best Eval")
-                    print(self.best_eval)
+            if iter > last_iter:
+                last_iter = iter
+                if self.suppress_output:
+                    if iter%100 == 0: #print out every 100th iteration update
+                        print("************************************************")
+                        print("Objective Function Iterations: " + str (iter))
+                        print("Best Eval: " + str(self.best_eval))
 
             x_coords = np.array(self.optimizer.get_search_locations()).T
             y_coords = np.array(self.optimizer.get_fitness_values()).T
-            self.update_plot(x_coords, y_coords, self.targets, showTarget=True, clearAx=True) #update matplot
+            self.update_plot(x_coords, y_coords, self.targets, last_iter, showTarget=True, clearAx=True) #update matplot
 
+        print("************************************************")
         print("Optimized Solution")
         print(self.optimizer.get_optimized_soln())
         print("Optimized Outputs")
