@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_antennaCAT
+#   multi_glods_python
 #   './multi_glods_python/src/multiglods_ctl.py'
 #   Constant values for objective function. Formatted for
 #       automating objective function integration
@@ -107,6 +107,12 @@ def post_objective_init_loop(state, ctl, prob, init, alg):
                     ctl['func_eval'] = ctl['func_eval'] + 1
                     ctl['func_iter'] = ctl['func_iter'] + 1
                     ctl['eval'] = 0
+
+                # check here for reshape errors first 
+                # - likely caused by obj func return in multiglods_helpers.py
+                # print("Ftemp in multiglods_ctl")
+                # print(Ftemp)
+                # print(np.shape(Ftemp))
 
                 if np.sum(np.isfinite(Ftemp), axis=0) == np.shape(Ftemp)[0]:
                     if not np.shape(ctl['Flist'])[0]:
@@ -364,8 +370,13 @@ def run_update(run_ctl, ctl, prob, alg, state):
 
         state['main_loop']['run'] = 0
 
-    if ctl['func_iter'] >= ctl['maxit']:
+    # NOTE: this is a change from the original version of
+    # MultiGLODS. Originally the counter was set to check
+    # if ctl['func_iter'] >= ctl['maxit']
+    # ['func_iter'] is a function iteration, but not how 
+    # how many times the objective function has been called. 
 
+    if ctl['objective_iter'] >= ctl['maxit']:
         state['main_loop']['run'] = 0
 
     return run_ctl, prob, state

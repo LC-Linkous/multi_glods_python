@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_antennaCAT
+#   multi_glods_python
 #   './multi_glods_python/src/main_test.py'
 #   Test function/example for using the multiglods optimizer. To match
 #       the format of the other optimizers in the AntennaCAT suite, this
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # Constant variables
     TOL = 10 ** -6      # Convergence Tolerance (This is a radius 
                             # based tolerance, not target based tolerance)
-    MAXIT = 3000        # Maximum allowed iterations  
+    MAXIT = 10000       # Maximum allowed iterations  
 
     # Objective function dependent variables
     LB = func_configs.LB[0]              # Lower boundaries, [[0.21, 0, 0.1]]
@@ -84,6 +84,8 @@ if __name__ == "__main__":
                         BP=BP, GP=GP, SF=SF,
                         parent=parent, detailedWarnings=detailedWarnings)
 
+    # sometimes multiGLODS doesn't call the objective function, so only print out when it does
+    last_iter = 0
 
     # loop to run optimizer in
     while not myGlods.complete():
@@ -96,14 +98,19 @@ if __name__ == "__main__":
         # control to optimizer
         myGlods.call_objective(allow_update)
         iter, eval = myGlods.get_convergence_data()
-
         if (eval < best_eval) and (eval != 0):
             best_eval = eval
-        print("Objective Function Call Iterations")
-        print(iter)
-        print("Best Eval")
-        print(best_eval)
+        if iter > last_iter:
+            last_iter = iter
+            if suppress_output:
+                if iter%100 == 0: #print out every 100th iteration update
+                    print("************************************************")
+                    print("Objective Function Iterations: " + str (iter))
+                    print("Best Eval: " + str(best_eval))
 
+    print("************************************************")
+    print("Objective Function Iterations: " + str (iter))
+    print("Best Eval: " + str(best_eval))
     print("Optimized Solution")
     print(myGlods.get_optimized_soln())
     print("Optimized Outputs")

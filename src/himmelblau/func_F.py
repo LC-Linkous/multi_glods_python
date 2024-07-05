@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##-------------------------------------------------------------------------------\
-#   multi_glods_antennaCAT
+#   multi_glods_python
 #   '.src/himmelblau/func_F.py'
 #   objective function for function compatable with project optimizers
 #

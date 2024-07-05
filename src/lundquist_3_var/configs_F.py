@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_antennaCAT
+#   multi_glods_python
 #   '.src/lundquist_3_var/configs_F.py'
 #   Constant values for objective function. Formatted for
 #       automating objective function integration

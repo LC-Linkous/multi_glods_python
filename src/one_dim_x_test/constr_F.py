@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##-------------------------------------------------------------------------------\
-#   multi_glods_antennaCAT
+#   multi_glods_python
 #   '.src/one_dim_x_test/constr_F.py'
 #   constraints function for function compatable with project optimizers
 #

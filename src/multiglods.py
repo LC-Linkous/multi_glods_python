@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_antennaCAT
+#   multi_glods_python
 #   './multi_glods_python/src/multiglods.py'
 #   Constant values for objective function. Formatted for
 #       automating objective function integration

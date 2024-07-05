@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_antennaCAT
+#   multi_glods_python
 #   './multi_glods_python/src/multiglods_helpers.py'
 #   MultiGLODS helper functions for supporting algorithm, controller, 
 #       and statemachine
@@ -236,12 +236,20 @@ def f_eval_objective_call(state, prob, ctl, allow_update):
         # NOTE: this is a change from the original multiglods_helpers.py
         # the new objective functioon configuration takes a horizontal array.
         # prob['FValtemp'], noErrorBool = ctl['obj_func'](prob['parent'], prob['xtemp'])
-        prob['FValtemp'], noErrorBool = ctl['obj_func'](np.hstack(prob['xtemp']))
-        if noErrorBool == False:
+        FVals, noErrorBool = ctl['obj_func'](np.hstack(prob['xtemp']))
+        # NOTE: multiGLODS needs a vertically stacked array
+        # print("SHAPE FVALS in multiglods_holders")
+        # print(FVals)
+        # print(np.shape(FVals))
+        if noErrorBool == True:
+            prob['FValtemp'] = np.array(FVals).reshape(-1, 1)
+            # print(prob['FValtemp'])
+            # print(np.shape(prob['FValtemp']))   
+            # adjust the fitness values output to be vertical to match multiGLODS expecations
+            prob['FValtemp'] = np.vstack(prob['FValtemp'])    
+        else:
             print("ERROR: error in evaluation of the objective function. Check evaluation")
 
-        # adjust the fitness values output to be vertical to match multiGLODS expecations
-        prob['FValtemp'] = np.vstack(prob['FValtemp'])
 
         if allow_update:
             state['evaluate'] = 0
