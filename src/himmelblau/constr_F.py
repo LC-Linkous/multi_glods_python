@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##-------------------------------------------------------------------------------\
-#   multi_glods_antennaCAT
+#   multi_glods_python
 #   '.src/himmelblau/constr_F.py'
 #   constraints function for function compatable with project optimizers
 #
