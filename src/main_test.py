@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_antennaCAT
+#   multi_glods_python
 #   './multi_glods_python/src/main_test.py'
 #   Test function/example for using the multiglods optimizer. To match
 #       the format of the other optimizers in the AntennaCAT suite, this

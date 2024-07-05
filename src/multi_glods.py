@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 ##--------------------------------------------------------------------\
-#   multi_glods_antennaCAT
+#   multi_glods_python
 #   './multi_glods_python/src/multi_glods.py'
 #   Class for intializing and interfacing with the multiGLODS algorithm
 #   NOTE: multiglods.py is the statemachine, 
@@ -50,23 +50,7 @@ class multi_glods:
                            self.prob, self.ctl, self.state, 
                            suppress_output)
         
-
-        # print("self.done")
-        # print(self.done)
-        # print("self.init")
-        # print(self.init)
-        # print("self.run_ctl")
-        # print(self.run_ctl)
-        # print("self.alg")
-        # print(self.alg)
-        # print("self.prob")
-        # print(self.prob)
-        # print("self.ctl")
-        # print(self.ctl)
-        # print("self.state")
-        # print(self.state)
-
-    
+   
     def call_objective(self, allow_update):
         self.state, self.prob = f_eval_objective_call(self.state, 
                                                       self.prob, 
