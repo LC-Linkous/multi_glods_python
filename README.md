@@ -1,14 +1,8 @@
-# multi_glods_antennaCAT
+# multi_glods_python
 
-Python-based MultiGLODS optimizer compatible with the [AntennaCAT](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool) optimizer suite.  This has been forked & modified from [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by [jonathan46000](https://github.com/jonathan46000).  Now featuring AntennaCAT hooks for GUI integration and user input handling.
+Python-based MultiGLODS optimizer compatible with the [AntennaCAT](https://github.com/LC-Linkous/AntennaCalculationAutotuningTool) optimizer suite.  Now featuring AntennaCAT hooks for GUI integration and user input handling.
 
 The [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by [jonathan46000](https://github.com/jonathan46000), is a Python translation of MATLAB MultiGLODS 0.1 (with random search method only). Please see the [MultiGLODS](#multiglods) and [Translation of MultiGLODS to Python](#translation-of-multiglods-to-python) sections for more information about the translation of the code and the original publication.
-
-Several changes have been made to the original direct translation:
-* ctl['objective_iter'] was added in multiglods_ctl.py as a way to count how many times the objective function has been called. 
-* This ctr['objective_iter'] variable is then used in multiglods_ctl.py in run_update() to check if the objective function calls
-have exceded a maximum iterations. 
-* Also, the objective function call returns the F value and a boolean for if the objective function was executed without error
 
 
 ## Table of Contents
@@ -57,6 +51,13 @@ please be sure to credit the original creators.
 Due to the translation the majority of code is written in the procedural style characteristic of most
 MATLAB code; however, it has been wrapped in a class in multi_glods.py with an example use case in 
 multiglods_test.py
+
+
+Several changes have been made to the original direct translation:
+* ctl['objective_iter'] was added in multiglods_ctl.py as a way to count how many times the objective function has been called. 
+* This ctr['objective_iter'] variable is then used in multiglods_ctl.py in run_update() to check if the objective function calls
+have exceded a maximum iterations. 
+* Also, the objective function call returns the F value and a boolean for if the objective function was executed without error
 
 ## Requirements
 
@@ -146,6 +147,14 @@ f_{2}(\mathbf{x}) = (x_3-0.2)^4
 ```math
 f(\mathbf{x}) = sin(5 * x^3) + cos(5 * x) * (1 - tanh(x^2))
 ```
+| Num. Input Variables| Boundary | Constraints |
+|----------|----------|----------|
+| 1      | $0\leq x\leq 1$  | $0\leq x\leq 1$| |
+
+Local minima at $(0.444453, -0.0630916)$
+
+Global minima at $(0.974857, -0.954872)$
+
 
 ## Example Implementations
 
@@ -202,8 +211,7 @@ Optimization using Direct Search, Journal of Global Optimization, 72 (2018), 323
 
 ## Licensing
 
-Unlike other optimizers in the AntennaCAT suite, which were released under GPL-2.0, this work is licensed
-under GPL-3.0 per the license used by the original authors of the MultiGLODS algorithm. 
+Unlike other optimizers in the AntennaCAT suite, which were released under GPL-2.0, this work is licensed under GPL-3.0 per the license used by the original authors of the MultiGLODS algorithm. 
 
 
 
