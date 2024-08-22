@@ -104,7 +104,9 @@ Other multi-objective functions can be applied to this project by following the 
 
 
 <p align="center">
-        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/himmelblau_plots.png" alt="Himmelblau function" height="250">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/main/media/himmelblau_plots.png" alt="Himmelblau function" height="250">
+
+        
 </p>
    <p align="center">Plotted Himmelblau Function with 3D Plot on the Left, and a 2D Contour on the Right</p>
 
@@ -122,7 +124,7 @@ f(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
 
 
 <p align="center">
-        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/lundquist_3var_plots.png" alt="Function Feasible Decision Space and Objective Space with Pareto Front" height="200">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/main/media/lundquist_3var_plots.png" alt="Function Feasible Decision Space and Objective Space with Pareto Front" height="200">
 </p>
    <p align="center">Plotted Multi-Objective Function Feasible Decision Space and Objective Space with Pareto Front</p>
 
@@ -140,7 +142,7 @@ f_{2}(\mathbf{x}) = (x_3-0.2)^4
 
 
 <p align="center">
-        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/1D_test_plots.png" alt="Function Feasible Decision Space and Objective Space with Pareto Front" height="200">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/main/media/1D_test_plots.png" alt="Function Feasible Decision Space and Objective Space with Pareto Front" height="200">
 </p>
    <p align="center">Plotted Single Input, Single-objective Function Feasible Decision Space and Objective Space with Pareto Front</p>
 
@@ -164,14 +166,14 @@ main_test.py provides a sample use case of the optimizer with tunable parameters
 ### Realtime Graph
 
 <p align="center">
-        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/himmelblau_search.gif" alt="gif of optimization model development through iterations" height="325">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/main/media/himmelblau_search.gif" alt="gif of optimization model development through iterations" height="325">
 </p>
 <p align="center"> MultiGLODS Optimization on Himmelblau's Function. Left, the Search Location. Right, the Current Global Best Fitness Compared to Target</p>
 
 <br>
 <br>
 <p align="center">
-        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/1D_test_search.gif" alt="gif of optimization development through iterations" height="325">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/main/media/1D_test_search.gif" alt="gif of optimization development through iterations" height="325">
 </p>
 <p align="center">MultiGLODS Optimization on a Single Objective Function with 1 Inputs and 1 Output. Left, the Search Location. Right, the Current Global Best Fitness Compared to Target</p>
 
@@ -179,7 +181,7 @@ main_test.py provides a sample use case of the optimizer with tunable parameters
 <br>
 
 <p align="center">
-        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/multi_glods_antennaCAT/media/multi_obj_search.gif" alt="gif of optimization model development through iterations" height="325">
+        <img src="https://github.com/LC-Linkous/multi_glods_python/blob/main/media/multi_obj_search.gif" alt="gif of optimization model development through iterations" height="325">
 </p>
 <p align="center">MultiGLODS Optimization on a Multi Objective Function with 3 Inputs and 2 Outputs. Left, the Search Location. Right, the Current Global Best Fitness Compared to Target</p>
 
