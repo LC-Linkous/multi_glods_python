@@ -7,10 +7,8 @@
 #   NOTE: multiglods.py is the statemachine, 
 #       and multiglods_ctl.py is the controller
 #
-#
-#
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: June 28, 2024
+#   Last update: March 13, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -29,18 +27,28 @@ except:# for local, unit testing
     from multiglods import multiglods
 
 class multi_glods:
-    def __init__(self, NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
-                 func_F, constr_func,
-                 BP=0.5, GP=1, SF=2,
-                 parent=None, detailedWarnings=False):
+    def __init__(self, LB, UB, TARGETS, TOL, MAXIT,
+                    obj_func, constr_func, 
+                    opt_df,
+                    parent=None):
+
+
+        LB = LB[0]
+        UB = UB[0]
+        NO_OF_VARS= int(len(LB))
+        BP = float(opt_df['BP'][0])
+        GP = float(opt_df['GP'][0])
+        SF = float(opt_df['SF'][0])
+        TARGETS= TARGETS
+        TOL = float(TOL)
+        MAXIT = int(MAXIT)
 
         self.init, self.run_ctl, self.alg, \
             self.prob, self.ctl, self.state = \
                 one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
-                              BP, GP, SF, func_F, constr_func)
+                              BP, GP, SF, obj_func, constr_func)
 
         self.prob['parent'] = parent
-        self.detailedWarnings = detailedWarnings
         self.done = 0
 
     def step(self, suppress_output):

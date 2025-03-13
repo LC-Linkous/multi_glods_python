@@ -8,7 +8,7 @@
 #
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: June 28, 2024
+#   Last update: March 13, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -245,7 +245,7 @@ def f_eval_objective_call(state, prob, ctl, allow_update):
             prob['FValtemp'] = np.array(FVals).reshape(-1, 1)
             # print(prob['FValtemp'])
             # print(np.shape(prob['FValtemp']))   
-            # adjust the fitness values output to be vertical to match multiGLODS expecations
+            # adjust the fitness values output to be vertical to match multiGLODS expectations
             prob['FValtemp'] = np.vstack(prob['FValtemp'])    
         else:
             print("ERROR: error in evaluation of the objective function. Check evaluation")
