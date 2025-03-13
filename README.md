@@ -123,8 +123,8 @@ This is an example for if you've had a difficult time with the requirements.txt 
 
     # optimizer specific vars
     BP = 0.5            # Beta Par
-    GP = 1.0            # Gamma Par
-    SF = 2.0            # Search Frequency
+    GP = 1              # Gamma Par
+    SF = 2              # Search Frequency
 
 
     # optimizer setting values
