@@ -54,8 +54,8 @@ as such is GPL 3.0 like MultiGLODS before it. Please include the license with an
 please be sure to credit the original creators. 
 
 Due to the translation the majority of code is written in the procedural style characteristic of most
-MATLAB code; however, it has been wrapped in a class in multi_glods.py with an example use case in 
-multiglods_test.py
+MATLAB code; however, it has been wrapped in a class in multi_glods.py with two example use cases in `main_test.py` 
+and `main_test_graph.py`
 
 
 Several changes have been made to the original direct translation:
@@ -105,54 +105,72 @@ This is an example for if you've had a difficult time with the requirements.txt 
 
 ```python
     # Constant variables
-    NO_OF_PARTICLES = 11         # Number of particles in swarm
-    TOL = 10 ** -18              # Convergence Tolerance
-    MAXIT = 10000                # Maximum allowed iterations
-    BOUNDARY = 1                 # int boundary 1 = random,      2 = reflecting
-                                 #              3 = absorbing,   4 = invisible
+    TOL = 10 ** -6      # Convergence Tolerance (This is a radius 
+                            # based tolerance, not target based tolerance)
+    MAXIT = 10000       # Maximum allowed iterations  
+
+    # Objective function dependent variables
+    LB = func_configs.LB              # Lower boundaries, [[0.21, 0, 0.1]]
+    UB = func_configs.UB              # Upper boundaries, [[1, 1, 0.5]]
+    IN_VARS = func_configs.IN_VARS    # Number of input variables (x-values)   
+    OUT_VARS = func_configs.OUT_VARS  # Number of output variables (y-values)
+    TARGETS = func_configs.TARGETS    # Target values for output
 
     # Objective function dependent variables
     func_F = func_configs.OBJECTIVE_FUNC  # objective function
     constr_F = func_configs.CONSTR_FUNC   # constraint function
 
-    LB = func_configs.LB              # Lower boundaries, [[0.21, 0, 0.1]]
-    UB = func_configs.UB              # Upper boundaries, [[1, 1, 0.5]]   
-    OUT_VARS = func_configs.OUT_VARS  # Number of output variables (y-values)
-    TARGETS = func_configs.TARGETS    # Target values for output
 
-    # optimizer constants
-    WEIGHTS = [[0.5, 0.7, 0.78]]       # Update vector weights
-    VLIM = 1                           # Initial velocity limit
+    # optimizer specific vars
+    BP = 0.5            # Beta Par
+    GP = 1.0            # Gamma Par
+    SF = 2.0            # Search Frequency
+
+
+    # optimizer setting values
+    parent = None                 # Optional parent class for optimizer
+                                    # (Used for passing debug messages or
+                                    # other information that will appear 
+                                    # in GUI panels)
 
     best_eval = 1
-    parent = None            # for the optimizer test ONLY
-    suppress_output = True   # Suppress the console output of particle swarm
-    allow_update = True      # Allow objective call to update state 
 
+    suppress_output = True   # Suppress the console output of multiglods
+
+
+
+    allow_update = True      # Allow objective call to update state 
+                            # (Can be set on each iteration to allow 
+                            # for when control flow can be returned 
+                            # to multiglods)   
+
+
+
+    # instantiation of multiglods optimizer 
     # Constant variables
-    opt_params = {'NO_OF_PARTICLES': [NO_OF_PARTICLES], # Number of particles in swarm
-                'BOUNDARY': [BOUNDARY],                 # int boundary 1 = random,      2 = reflecting
-                                                        #   3 = absorbing,   4 = invisible
-                'WEIGHTS': [WEIGHTS],                   # Update vector weights
-                'VLIM':  [VLIM] }                       # Initial velocity limit
+    opt_params = {'BP': [BP],               # Beta Par
+                'GP': [GP],                 # Gamma Par
+                'SF': [SF] }                # Search Frequency
 
     opt_df = pd.DataFrame(opt_params)
-    myOptimizer = swarm(LB, UB, TARGETS, TOL, MAXIT,
+    myGlods = multi_glods(LB, UB, TARGETS, TOL, MAXIT,
                             func_F, constr_F,
                             opt_df,
-                            parent=parent)  
+                            parent=parent)   
 
-    # arguments should take form: 
-    # swarm([[float, float, ...]], [[float, float, ...]], [[float, ...]], float, int,
+
+    # arguments should take the form: 
+    # multi_glods([[float, float, ...]], [[float, float, ...]], [[float, ...]], float, int,
     # func, func,
     # dataFrame,
-    # class obj) 
+    # class obj,
+    # bool, class obj) 
     #  
     # opt_df contains class-specific tuning parameters
-    # NO_OF_PARTICLES: int
-    # weights: [[float, float, float]]
-    # boundary: int. 1 = random, 2 = reflecting, 3 = absorbing,   4 = invisible
-    # vlim: float
+    # BP: float
+    # GP: int
+    # SF: int
+    #
 
 ```
 
@@ -373,7 +391,7 @@ Global minima at $(0.974857, -0.954872)$
 <br>
 <br>
 
-`main_test_graph.py` provides an example using a parent class, and the self.suppress_output and detailedWarnings flags to control error messages that are passed back to the parent class to be printed with a timestamp. Additionally, a realtime graph shows particle locations at every step.
+`main_test_graph.py` provides an example using a parent class, and the self.suppress_output flag to control error messages that are passed back to the parent class to be printed with a timestamp. Additionally, a realtime graph shows particle locations at every step.
 
 The figure above shows samples of the MultiGLODS optimizer searching each of the three included example objective functions. In all figures in this section, the left plot shows the current search location(s), and the right shows the history of the global best fitness values (the black circles) in relation to the target (the red star). The three graphs present a similar process for different dimensions of objective functions.
 

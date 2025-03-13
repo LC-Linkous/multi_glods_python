@@ -27,6 +27,18 @@ except:# for local, unit testing
     from multiglods import multiglods
 
 class multi_glods:
+        # arguments should take form: 
+    # multi_glods([[float, float, ...]], [[float, float, ...]], [[float, ...]], float, int,
+    # func, func,
+    # dataFrame,
+    # class obj,
+    # bool, class obj) 
+    #  
+    # opt_df contains class-specific tuning parameters
+    # BP: float
+    # GP: int
+    # SF: int
+    #
     def __init__(self, LB, UB, TARGETS, TOL, MAXIT,
                     obj_func, constr_func, 
                     opt_df,
@@ -37,8 +49,8 @@ class multi_glods:
         UB = UB[0]
         NO_OF_VARS= int(len(LB))
         BP = float(opt_df['BP'][0])
-        GP = float(opt_df['GP'][0])
-        SF = float(opt_df['SF'][0])
+        GP = int(opt_df['GP'][0])
+        SF = int(opt_df['SF'][0])
         TARGETS= TARGETS
         TOL = float(TOL)
         MAXIT = int(MAXIT)
