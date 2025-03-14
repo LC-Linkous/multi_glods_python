@@ -8,7 +8,7 @@
 #
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: June 28, 2024
+#   Last update: March 13, 2025
 ##--------------------------------------------------------------------\
 
 import numpy as np

@@ -15,13 +15,14 @@
 #       This version builds from 'main_test.py' to include a 
 #       matplotlib plot of particle location
 #
-#   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: June 28, 2024
+#   Author(s): Lauren Linkous, Jonathan Lundquist
+#   Last update: March 13, 2025
 ##--------------------------------------------------------------------\
 
 
 
 import numpy as np
+import pandas as pd
 import time
 import matplotlib.pyplot as plt
 
@@ -52,9 +53,9 @@ class TestGraph():
         MAXIT = 10000        # Maximum allowed iterations  
 
         # Objective function dependent variables
-        LB = func_configs.LB[0]              # Lower boundaries, [[0.21, 0, 0.1]]
-        UB = func_configs.UB[0]              # Upper boundaries, [[1, 1, 0.5]]
-        IN_VARS = func_configs.IN_VARS      # Number of input variables (x-values)   
+        LB = func_configs.LB                 # Lower boundaries, [[0.21, 0, 0.1]]
+        UB = func_configs.UB                 # Upper boundaries, [[1, 1, 0.5]]
+        IN_VARS = func_configs.IN_VARS       # Number of input variables (x-values)   
         OUT_VARS = func_configs.OUT_VARS     # Number of output variables (y-values)
         TARGETS = func_configs.TARGETS       # Target values for output
 
@@ -79,11 +80,6 @@ class TestGraph():
         self.suppress_output = True   # Suppress the console output of multiglods
 
 
-
-        detailedWarnings = False      # Optional boolean for detailed feedback
-                                        # (Independent of suppress output. 
-                                        #  Includes error messages and warnings)
-
         self.allow_update = True      # Allow objective call to update state 
                                 # (Can be set on each iteration to allow 
                                 # for when control flow can be returned 
@@ -91,10 +87,16 @@ class TestGraph():
 
 
         # instantiation of multiglods optimizer 
-        self.optimizer = multi_glods(IN_VARS, LB, UB, TARGETS, TOL, MAXIT,
-                        func_F=func_F, constr_func=constr_F,
-                        BP=BP, GP=GP, SF=SF,
-                        parent=parent, detailedWarnings=detailedWarnings)
+        # Constant variables
+        opt_params = {'BP': [BP],               # Beta Par
+                    'GP': [GP],                 # Gamma Par
+                    'SF': [SF] }                # Search Frequency
+
+        opt_df = pd.DataFrame(opt_params)
+        self.optimizer = multi_glods(LB, UB, TARGETS, TOL, MAXIT,
+                                func_F, constr_F,
+                                opt_df,
+                                parent=parent)   
 
 
         # Matplotlib setup
