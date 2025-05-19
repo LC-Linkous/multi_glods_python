@@ -31,8 +31,8 @@ class multi_glods:
     # multi_glods([[float, float, ...]], [[float, float, ...]], [[float, ...]], float, int,
     # func, func,
     # dataFrame,
-    # class obj,
-    # bool, class obj) 
+    # class obj, 
+    # bool, [int, int, ...]) 
     #  
     # opt_df contains class-specific tuning parameters
     # BP: float
@@ -42,7 +42,8 @@ class multi_glods:
     def __init__(self, LB, UB, TARGETS, TOL, MAXIT,
                     obj_func, constr_func, 
                     opt_df,
-                    parent=None):
+                    parent=None, 
+                    evaluate_threshold=False, obj_threshold=None):
 
 
         LB = LB[0]
@@ -55,10 +56,30 @@ class multi_glods:
         TOL = float(TOL)
         MAXIT = int(MAXIT)
 
+        #evaluation method for targets
+        # True: Evaluate as true targets
+        # False: Evaluate as thesholds based on information in obj_threshold
+        if evaluate_threshold==False:
+            THRESHOLD = None # for error checking later via wrapper
+
+        else:
+            if not(len(obj_threshold) == len(TARGETS)):
+                print("WARNING: THRESHOLD option selected.  +\
+                Dimensions for THRESHOLD do not match TARGET array. Defaulting to TARGET search.")
+                evaluate_threshold = False
+                THRESHOLD = None
+            else:
+                evaluate_threshold = evaluate_threshold #bool
+                THRESHOLD = np.array(obj_threshold).reshape(-1, 1) #np.array
+        
+
+
+
+
         self.init, self.run_ctl, self.alg, \
             self.prob, self.ctl, self.state = \
                 one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
-                              BP, GP, SF, obj_func, constr_func)
+                              BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD)
 
         self.prob['parent'] = parent
         self.done = 0
@@ -72,11 +93,12 @@ class multi_glods:
         
    
     def call_objective(self, allow_update):
-        self.state, self.prob = f_eval_objective_call(self.state, 
+        self.state, self.prob, noErrorBool = f_eval_objective_call(self.state, 
                                                       self.prob, 
                                                       self.ctl,
                                                       allow_update)
-        
+        return noErrorBool
+
     def export_glods(self):
         glods_export = {'init': self.init, 'run_ctl': self.run_ctl,
                         'alg': self.alg, 'prob': self.prob,

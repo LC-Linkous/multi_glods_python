@@ -36,7 +36,7 @@ except:# for local, unit testing
 
 
 def one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
-                              BP, GP, SF, obj_func, constr_func):    
+                              BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD):    
 
     LB = np.vstack(np.array(LB))
     UB = np.vstack(np.array(UB))
@@ -46,8 +46,8 @@ def one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
              'post_init': 0, 'main_loop': {'run': 0, 'init': 1},
              'evaluate': 0, 'eval_return': 0, 'location': 1}
     alg = {'lbound': LB,
-           'ubound': UB, 'targets': TARGETS, 'tol_stop': TOL,
-           'beta_par': BP, 'gamma_par': GP, 'poll_complete': 0,
+           'ubound': UB, 'targets': TARGETS, 'threshold': THRESHOLD, 'evaluate_threshold': evaluate_threshold, 
+             'tol_stop': TOL, 'beta_par': BP, 'gamma_par': GP, 'poll_complete': 0,
            'search_freq': SF}
     
     nn = np.shape(alg['lbound'])[0]
@@ -68,7 +68,8 @@ def one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
 
     ctl = {'func_eval': 0, 'match': 0, 'func_iter': 0, 'objective_iter': 0, 'eval': 0, 'finite': 0,
            'search_loop': 0, 'poll_loop': 0, 'i': 0, 'sel_level': 0,
-           'Flist': [], 'D': [], 'count_d': [], 'nd': [], 'maxit': MAXIT, 'obj_func': obj_func, 'constr_func': constr_func}
+           'Flist': [], 'D': [], 'count_d': [], 'nd': [], 'maxit': MAXIT, 
+           'obj_func': obj_func, 'constr_func': constr_func}
     init = []
     run_ctl = {'search_size': prob['n'], 'iter': 0,
                'iter_suc': 0, 'unsuc_consec': 0,
@@ -370,8 +371,8 @@ def run_update(run_ctl, ctl, prob, alg, state):
 
         state['main_loop']['run'] = 0
 
-    # NOTE: this is a change from the original version of
-    # MultiGLODS. Originally the counter was set to check
+    # NOTE: this is a change from the original translation. 
+    #  Originally the counter was set to check
     # if ctl['func_iter'] >= ctl['maxit']
     # ['func_iter'] is a function iteration, but not how 
     # how many times the objective function has been called. 
