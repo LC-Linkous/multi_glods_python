@@ -46,15 +46,21 @@ class multi_glods:
                     evaluate_threshold=False, obj_threshold=None):
 
 
+        #unpack the opt_df standardized vals
+        BP = float(opt_df['BP'][0])
+        GP = float(opt_df['GP'][0])
+        SF = float(opt_df['SF'][0])
+   
+        #reformat since multi_glods needs single []
         LB = LB[0]
         UB = UB[0]
-        NO_OF_VARS= int(len(LB))
-        BP = float(opt_df['BP'][0])
-        GP = int(opt_df['GP'][0])
-        SF = int(opt_df['SF'][0])
-        TARGETS= TARGETS
+
+        # enforce typing
+        NO_OF_VARS = int(len(LB))
         TOL = float(TOL)
         MAXIT = int(MAXIT)
+        TARGETS = TARGETS
+
 
         #evaluation method for targets
         # True: Evaluate as true targets
