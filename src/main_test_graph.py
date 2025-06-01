@@ -16,7 +16,7 @@
 #       matplotlib plot of particle location
 #
 #   Author(s): Lauren Linkous, Jonathan Lundquist
-#   Last update: March 13, 2025
+#   Last update: June 1, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -38,8 +38,8 @@ except:# for local, unit testing
 
 # OBJECTIVE FUNCTION SELECTION
 #import one_dim_x_test.configs_F as func_configs     # single objective, 1D input
-#import himmelblau.configs_F as func_configs         # single objective, 2D input
-import lundquist_3_var.configs_F as func_configs     # multi objective function
+import himmelblau.configs_F as func_configs         # single objective, 2D input
+#import lundquist_3_var.configs_F as func_configs     # multi objective function
 
 
 
@@ -90,7 +90,8 @@ class TestGraph():
         # Constant variables
         opt_params = {'BP': [BP],               # Beta Par
                     'GP': [GP],                 # Gamma Par
-                    'SF': [SF] }                # Search Frequency
+                    'SF': [SF],                 # Search Frequency
+                    'R_TOL': [TOL]}             # radial tolerance, NOT ERROR tolerance 
 
         opt_df = pd.DataFrame(opt_params)
         self.optimizer = multi_glods(LB, UB, TARGETS, TOL, MAXIT,

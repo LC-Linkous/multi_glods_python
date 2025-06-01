@@ -11,7 +11,7 @@
 #
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: March 13, 2025
+#   Last update: June 1, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -29,15 +29,16 @@ except:# for local, unit testing
 
 # OBJECTIVE FUNCTION SELECTION
 #import one_dim_x_test.configs_F as func_configs     # single objective, 1D input
-import himmelblau.configs_F as func_configs         # single objective, 2D input
-#import lundquist_3_var.configs_F as func_configs    # multi objective function
+#import himmelblau.configs_F as func_configs         # single objective, 2D input
+import lundquist_3_var.configs_F as func_configs    # multi objective function
 
 
 if __name__ == "__main__":
     # Constant variables
-    TOL = 10 ** -6      # Convergence Tolerance (This is a radius 
-                            # based tolerance, not target based tolerance)
-    MAXIT = 10000       # Maximum allowed iterations  
+    R_TOL = 10 ** -6      # Convergence Tolerance (This is a radius 
+                          # based tolerance, not target based tolerance)
+    E_TOL = 10 ** -15     # Convergence Error Tolerance                         
+    MAXIT = 10000         # Maximum allowed iterations  
 
     # Objective function dependent variables
     LB = func_configs.LB              # Lower boundaries, [[0.21, 0, 0.1]]
@@ -85,10 +86,11 @@ if __name__ == "__main__":
     # Constant variables
     opt_params = {'BP': [BP],               # Beta Par
                 'GP': [GP],                 # Gamma Par
-                'SF': [SF] }                # Search Frequency
+                'SF': [SF],                 # Search Frequency
+                'R_TOL': [R_TOL]}           # radial tolerance, NOT ERROR tolerance 
 
     opt_df = pd.DataFrame(opt_params)
-    myGlods = multi_glods(LB, UB, TARGETS, TOL, MAXIT,
+    myGlods = multi_glods(LB, UB, TARGETS, E_TOL, MAXIT,
                             func_F, constr_F,
                             opt_df,
                             parent=parent, 
@@ -124,7 +126,7 @@ if __name__ == "__main__":
             "This may be due to constraints or problem definition")
 
     print("************************************************")
-    print("Objective Function Iterations: " + str (iter))
+    print("Total Objective Function Iterations: " + str (iter))
     print("Best Eval: " + str(best_eval))
     print("Optimized Solution")
     print(myGlods.get_optimized_soln())
