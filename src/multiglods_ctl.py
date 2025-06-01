@@ -8,7 +8,7 @@
 #
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: March 13, 2025
+#   Last update: June 1, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -35,7 +35,7 @@ except:# for local, unit testing
     from multiglods_alg import select_pollcenter
 
 
-def one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
+def one_time_init(NO_OF_VARS, LB, UB, TARGETS, E_TOL, R_TOL, MAXIT,
                               BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD):    
 
     LB = np.vstack(np.array(LB))
@@ -47,7 +47,7 @@ def one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
              'evaluate': 0, 'eval_return': 0, 'location': 1}
     alg = {'lbound': LB,
            'ubound': UB, 'targets': TARGETS, 'threshold': THRESHOLD, 'evaluate_threshold': evaluate_threshold, 
-             'tol_stop': TOL, 'beta_par': BP, 'gamma_par': GP, 'poll_complete': 0,
+            'err_tol_stop': E_TOL, 'tol_stop': R_TOL, 'beta_par': BP, 'gamma_par': GP, 'poll_complete': 0,
            'search_freq': SF}
     
     nn = np.shape(alg['lbound'])[0]

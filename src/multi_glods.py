@@ -8,7 +8,7 @@
 #       and multiglods_ctl.py is the controller
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: March 13, 2025
+#   Last update: June 1, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -43,13 +43,27 @@ class multi_glods:
                     obj_func, constr_func, 
                     opt_df,
                     parent=None, 
-                    evaluate_threshold=False, obj_threshold=None):
+                    evaluate_threshold=False, obj_threshold=None,
+                    useSurrogateModel=False,  # This optimizer cannot use an internal optimizer
+                    surrogateOptimizer=None): # used for format streamlining
+
+
+        # vars for using surrogate model
+        self.useSurrogateModel = useSurrogateModel # bool for if using surrogate model
+        self.surrogateOptimizer = surrogateOptimizer     # pass in the class for the surrogate model
+                                                   # optimizer. this is configured as needed 
+
+
 
 
         #unpack the opt_df standardized vals
         BP = float(opt_df['BP'][0])
         GP = float(opt_df['GP'][0])
         SF = float(opt_df['SF'][0])
+        R_TOL = float(opt_df['R_TOL'][0]) #override because this is the RADIUS not the ERROR tolerance
+                                        # this version of multiGLODS
+                                        # R_TOL becomes 'tol_stop' & 'tol_active_points' in the polling step. 
+
    
         #reformat since multi_glods needs single []
         LB = LB[0]
@@ -57,7 +71,7 @@ class multi_glods:
 
         # enforce typing
         NO_OF_VARS = int(len(LB))
-        TOL = float(TOL)
+        E_TOL = float(TOL) #the l2norm distance from target
         MAXIT = int(MAXIT)
         TARGETS = TARGETS
 
@@ -84,7 +98,7 @@ class multi_glods:
 
         self.init, self.run_ctl, self.alg, \
             self.prob, self.ctl, self.state = \
-                one_time_init(NO_OF_VARS, LB, UB, TARGETS, TOL, MAXIT,
+                one_time_init(NO_OF_VARS, LB, UB, TARGETS, E_TOL, R_TOL, MAXIT,
                               BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD)
 
         self.prob['parent'] = parent
@@ -120,8 +134,9 @@ class multi_glods:
         self.state = glods_export['state']
         self.ctl['obj_func'] = obj_func
 
-    def complete(self):
-        return self.done
+    # swapping this version out for one that matches the AntennaCAT standard set
+    # def complete(self):
+    #     return self.done
     
     def get_obj_inputs(self):
         if self.state['init']:
@@ -130,6 +145,9 @@ class multi_glods:
             return self.prob['xtemp']
         
     def get_convergence_data(self):
+        # used the L2 norm to get the distance from target
+        # distance from target at each metric (Flist) has already been handled 
+
         if len(np.shape(self.ctl['Flist'])) > 1:
             best_eval = np.linalg.norm(self.ctl['Flist'][:,0])
         else:
@@ -160,3 +178,30 @@ class multi_glods:
     def get_fitness_values(self):
         x_locations = self.ctl['Flist']
         return x_locations
+
+    # funcs from other optimizers in the AntennaCAT set for stop conditions
+    def converged(self):
+       
+        if np.shape(self.ctl['Flist'])[0] == 0:
+            return False
+        elif len(np.shape(self.ctl['Flist'])) > 1:
+            best_eval = np.linalg.norm(self.ctl['Flist'][:,0])
+        else:
+            best_eval = np.linalg.norm(self.ctl['Flist'])
+
+        convergence = best_eval < self.alg['err_tol_stop'] #E_TOL comparison. returns bool
+        return convergence
+    
+    def maxed(self):
+        max_iter = self.ctl['objective_iter'] >= self.ctl['maxit']
+        return max_iter
+    
+    def complete(self):
+        # includes  self.done from this optimizer, and the standardized  'self.converged() or self.maxed()'
+        done = self.done or self.maxed() or self.converged() 
+        # print("CHECK COMPLETE")
+        # print(self.done)
+        # print(self.maxed())
+        # print(self.converged())
+
+        return done
