@@ -6,7 +6,7 @@
 #   configurations for function compatable with project optimizers
 #
 #   Author(s): Lauren Linkous (LINKOUSLC@vcu.edu)
-#   Last update: May 25, 2024
+#   Last update: June 1, 2025
 ##-------------------------------------------------------------------------------\
 
 
@@ -31,3 +31,4 @@ IN_VARS = 2                 # Number of input variables (x-values)
 OUT_VARS = 1                # Number of output variables (y-values) 
 TARGETS = [0]               # Target values for output
 GLOBAL_MIN = [[3, 2]]       # Global minima sample, if they exist. 
+# (-3.78, -3.28), (-2.81, 3.13), (3.58, -1.85), and (3, 2)
