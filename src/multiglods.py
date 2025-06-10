@@ -52,8 +52,9 @@ except:# for local, unit testing
 
 def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
     
-    # Main application loop (This is the only loop,
-    # allows for easy conversion to external control)
+    # Main application loop 
+    ## This is the only loop, which allows for easy conversion to external control
+
 
     if state['init'] or state['post_init'] or state['main_loop']['run']:
         
@@ -70,9 +71,11 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
            (ctl['i'] <= np.shape(prob['Pini'])[1]) and \
            feasible(init['x_ini'], alg['ubound'], alg['lbound'], prob['n'], ctl):
             
-            if not state['evaluate'] and not state['eval_return']:               
+            if not state['evaluate'] and not state['eval_return']:
+                # marks objective function for evaluation               
                 state, prob = f_eval(state, init['x_ini'], prob, 1)
             else:
+                # call the objective function
                 state, prob = f_eval_return(state, prob, alg, 1)
         
         # initalizations post objective function call

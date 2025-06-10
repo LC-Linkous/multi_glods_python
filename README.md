@@ -4,10 +4,12 @@ Python-based MultiGLODS optimizer compatible with the [AntennaCAT](https://githu
 
 The [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by [jonathan46000](https://github.com/jonathan46000), is a Python translation of MATLAB MultiGLODS 0.1 (with random search method only). Please see the [MultiGLODS](#multiglods) and [Translation of MultiGLODS to Python](#translation-of-multiglods-to-python) sections for more information about the translation of the code and the original publication.
 
-
 ## Table of Contents
 * [MultiGLODS](#multiglods)
 * [Translation of MultiGLODS to Python](#translation-of-multiglods-to-python)
+    * [Original Translation to Python](#original-translation-to-python)
+    * [Streamlined Interface for AntennaCAT Optimizer Modularity](#streamlined-interface-for-antennacat-optimizer-modularity)
+    * [Addition of Threshold vs. Target](#addition-of-threshold-vs-target)
 * [Requirements](#requirements)
 * [Implementation](#implementation)
     * [Initialization](#initialization) 
@@ -17,13 +19,13 @@ The [multi_glods_python](https://github.com/jonathan46000/multi_glods_python) by
     * [Objective Function Handling](#objective-function-handling)
       * [Creating a Custom Objective Function](#creating-a-custom-objective-function)
       * [Internal Objective Function Example](internal-objective-function-example)
+    * [Target vs. Threshold Configuration](#target-vs-threshold-configuration)
 * [Example Implementations](#example-implementations)
     * [Basic Example](#basic-example)
     * [Realtime Graph](#realtime-graph)
 * [References](#references)
 * [Related Publications and Repositories](#related-publications-and-repositories)
 * [Licensing](#licensing)  
-
 
 ## MultiGLODS
 
@@ -35,34 +37,146 @@ Some key points of this algorithm are:
 
 * "Points sufficiently close to each other are compared and only nondominated points will remain active. In the end of the optimization process, the set of all active points will define the approximations to the Pareto fronts of the problem (local and global)." [1]
 
+In the following section, the translation of the algorithm and some of the design choices for adaption are described. 
 
 ## Translation of MultiGLODS to Python
-From the main branch [multi_glods_python README:](https://github.com/jonathan46000/multi_glods_python/blob/main/README.md)
 
-The original MultiGLODS 0.1 is written in MATLAB by Dr. Ana Luise Custódio and 
-J. F. A. Madeira at the Nova School of Science and Technology and at ISEL and IDMEC-IST, Lisbon
-respectively.  Please use the following references and complementary material:
+### Original Translation to Python
 
-A. L. Custódio and J. F. A. Madeira, MultiGLODS: Global and Local Multiobjective 
-Optimization using Direct Search, Journal of Global Optimization, 72 (2018), 323 - 345 PDF
+From [jonathan46000's] original main branch [multi_glods_python README:](https://github.com/jonathan46000/multi_glods_python/blob/main/README.md)
 
-This Python project, moves MultiGLODS to a state based design so that the objective function calls
-are de-embedded from loops and could be executed as callbacks with minor modification. The translation
-to Python allows the algorithm to be run without using MATLAB licensed software and allows for interoperability
-with AntennaCAT software written by Lauren Linkous at VCU. Much of the code is a direct translation and 
-as such is GPL 3.0 like MultiGLODS before it. Please include the license with any derivative work, and 
-please be sure to credit the original creators. 
+        The original MultiGLODS 0.1 is written in MATLAB by Dr. Ana Luise Custódio and 
+        J. F. A. Madeira at the Nova School of Science and Technology and at ISEL and IDMEC-IST, Lisbon
+        respectively.  Please use the following references and complementary material:
 
-Due to the translation the majority of code is written in the procedural style characteristic of most
-MATLAB code; however, it has been wrapped in a class in multi_glods.py with two example use cases in `main_test.py` 
-and `main_test_graph.py`
+        A. L. Custódio and J. F. A. Madeira, MultiGLODS: Global and Local Multiobjective 
+        Optimization using Direct Search, Journal of Global Optimization, 72 (2018), 323 - 345 PDF
 
+        This Python project moves MultiGLODS to a state-based design so that the objective function calls
+        are de-embedded from loops and could be executed as callbacks with minor modification. The translation
+        to Python allows the algorithm to be run without using MATLAB licensed software and allows for interoperability
+        with AntennaCAT software written by [Lauren Linkous](https://github.com/LC-Linkous/) at VCU. Much of the code is a direct translation and 
+        as such is GPL 3.0 like MultiGLODS before it. Please include the license with any derivative work, and 
+        please be sure to credit the original creators. 
 
-Several changes have been made to the original direct translation:
+        Due to the translation the majority of code is written in the procedural style characteristic of most
+        MATLAB code; however, it has been wrapped in a class in multi_glods.py with two example use cases in `main_test.py` 
+        and `main_test_graph.py`
+
+**State Machine Structure**
+
+The [State Machine-based Structure](#state-machine-based-structure) section explains the general structure of the state machine approach and how the objective function is called from the wrapper. 
+
+**Iteration Counting**
+
+In the original MATLAB code, the reports printed to the terminal tracked both the iterations (steps) through the algorithm's state machine and the objective function calls. For the purpose of tracking the rate of convergence, this format uses the number of objective function calls as the maximum iteration convergence. 
+
 * ctl['objective_iter'] was added in multiglods_ctl.py as a way to count how many times the objective function has been called. 
 * This ctr['objective_iter'] variable is then used in multiglods_ctl.py in run_update() to check if the objective function calls
-have exceded a maximum iterations. 
-* Also, the objective function call returns the F value and a boolean for if the objective function was executed without error
+have exceeded a maximum number of iterations. 
+* Also, the objective function call returns the F value and a boolean for if the objective function was executed without error. This bool can be used in the outer wrapper to track if the objective function call was executed successfully. 
+
+**Initialization**
+
+Several choices for the initialization and objective functions were also made for the translation. The original MultiGLODS includes constants and variables in `parameters_multiglods.m`,  which can be set before each run. These parameters include report generation and export, stop conditions, max function evaluation, managing solving conditions and functions, and search and poll selection. 
+
+A quick summary of the original MATLAB MultiGLODS parameters and their counterparts in multi_glods_python are described below.
+
+* `output` . This variable set the final report display. There is no equivalent in this Python implementation, but it is easy to add to a wrapped class. This choice was made because of the different ways we hook the optimizers into different projects. 
+
+* `stop_alfa`. This is explicitly used as a stop condition with no option to turn it off in the Python version.
+
+* `stop_feval`. This is explicitly used as a stop condition with no option to turn it off in the Python version.
+
+* `suf_decrease`. The Python version uses the default value, it is hardcoded in the state machine.
+
+* `cache`. No equivalent. The Python version always evaluates a point. Points that are not active (in cases where bounds deactivate a point) aren’t evaluated, but there’s also a tracking system to check if there’s at least 1 active point.
+ 
+* `list`. In the Python version, on initializing the random points, we do it with “self.rng = Generator(MT19937())”. We do not control how the numbers cluster or don’t with the initial point generation. At the time of this translation, there was no easily integrable official hypercube solvers, and rather than only implementing several options, it was decided to use the random number generation (option 2 in the original MATLAB) for simplicity. 
+
+* `user_list_size` and `nPini`. The Python version uses the problem dimension to set the initial size of the list. 
+
+* `search_option`. Similar to the approach with `list`, the Python version uses the default option (5). The other methods of sampling are of interest, but this was decided on until integration could be done with official libraries for the hypercube sampling.  
+
+* `search_size`. The Python version uses the default so that the number of points generated is equal to the problem dimension. This is hard coded into the state machine. 
+
+* `search_freq_type`. The Python version uses the default so that the search step is based on the frequency of unsuccessful iterations. This is hard coded into the state machine because we use the `search_freq` (below). 
+
+* `option_pollcenter`. The Python version uses the default (3). " the poll center corresponds to an active point, not yet identified as a local Pareto point, corresponding to the largest step size parameter". This is hard coded into the state machine. 
+
+* `spread_option`. The Python version uses the default (1). This is hard coded into the state machine. 
+
+* `poll_complete `. The Python version uses the default (1). This is hard coded into the state machine so that complete evaluation is performed.
+
+* `dir_dense `. The Python version uses the default (1) so an asymptotically dense set of directions are considered in the polling step.
+
+The following have default values, but are changeable in the optimizer declaration: 
+
+* `tol_stop`. This is included in the wrapper and passed through to the MultiGLODS optimizer as E_TOL. 
+
+* `max_fevals`.  This is included in the wrapper and passed through to the MultiGLODS optimizer as MAX_ITER. 
+
+* `search_freq`. The Python version uses 2 or 3 by default (depends on the repo example). The default in the MATLAB code is 3. 
+
+* `beta_par `.  Coefficient for step size contraction. The MATLAB and Python default is 0.5, but this can be changed (with mixed results).
+
+* `gamma_par `. Coefficient for step size expansion. The MATLAB and Python default is 1, but this can be changed (with mixed results).
+
+**Modular Objective Functions**
+
+The optimizer format is compatible with the [Objective Function Test Suite](https://github.com/LC-Linkous/objective_function_suite) with functions formatted for benchmarking with the AntennaCAT set. This allows for different objective functions to be quickly tested without excessive editing of functions. 
+
+**Optimization Solutions**
+
+The Python version of the optimizer minimizes the absolute value of the difference of the target outputs and the evaluated outputs. There has been the addition of using target values of thresholds during the devaluation, but this does not effect the overall process of the algorithm.  Future versions may include options for function minimization when target values are absent.
+
+
+### Streamlined Interface for AntennaCAT Optimizer Modularity  
+
+Prior to the AntennaCAT v2025.2 rollout for publication, the optimizers included were streamlined so that they would have the same constructor format across classes. 
+
+```python
+    # instantiation of MultiGLODS optimizer 
+    # constant variables
+    opt_params = {'BP': [BP],               # Beta Par
+                'GP': [GP],                 # Gamma Par
+                'SF': [SF] }                # Search Frequency
+
+    opt_df = pd.DataFrame(opt_params)
+    myGlods = multi_glods(LB, UB, TARGETS, TOL, MAXIT,
+                            func_F, constr_F,
+                            opt_df,
+                            parent=parent)   
+
+```
+
+All optimizers now have a Pandas dataframe object containing their custom variables for operation. These are unpacked in the initialization of the optimizer class. 
+
+
+### Addition of Threshold vs. Target
+
+Prior to the AntennaCAT v2025.2 rollout for publication, the ability to use thresholds and targets in order to find an optimized solution has been added. 
+
+Setting `evaluate_threshold` to False, or letting it remain in its default False state, will use the original 'distance to exact target' approach for minimization. Setting `evaluate_threshold` to True and giving it values of 0, 1, or 2 can be used to mix and match exact target and threshold values for each target. 
+
+That is, if the desired solution to a multi objective function is [0,0], then the `evaluate_threshold` can be set to False to use those values as the target. If a desired solution can be described as `less than` or `greater than` a threshold, then `evaluate_threshold` can be set to True and the associated array configured to select 'exact', 'less than' or 'greater than'. This is 
+
+Within the MultiGLODS algorithm, the following additions have been made to the `alg` data structure:
+
+```python
+
+    alg = {'lbound': LB,
+           'ubound': UB, 'targets': TARGETS, 'tol_stop': TOL,
+           'beta_par': BP, 'gamma_par': GP, 'poll_complete': 0,
+           'search_freq': SF}
+
+    alg = {'lbound': LB,
+           'ubound': UB, 'targets': TARGETS, 'threshold': THRESHOLD, 'evaluate_threshold': evaluate_threshold, 
+             'tol_stop': TOL, 'beta_par': BP, 'gamma_par': GP, 'poll_complete': 0,
+           'search_freq': SF}
+```
+
+
 
 ## Requirements
 
@@ -98,7 +212,6 @@ pip install  matplotlib, numpy, pandas
 ```
 This is an example for if you've had a difficult time with the requirements.txt file. Sometimes libraries are packaged together.
 
-
 ## Implementation
 
 ### Initialization 
@@ -120,12 +233,10 @@ This is an example for if you've had a difficult time with the requirements.txt 
     func_F = func_configs.OBJECTIVE_FUNC  # objective function
     constr_F = func_configs.CONSTR_FUNC   # constraint function
 
-
     # optimizer specific vars
     BP = 0.5            # Beta Par
     GP = 1              # Gamma Par
     SF = 2              # Search Frequency
-
 
     # optimizer setting values
     parent = None                 # Optional parent class for optimizer
@@ -135,15 +246,13 @@ This is an example for if you've had a difficult time with the requirements.txt 
 
     best_eval = 1
 
-    suppress_output = True   # Suppress the console output of multiglods
-
+    suppress_output = True   # Suppress the console output of MultiGLODS
 
 
     allow_update = True      # Allow objective call to update state 
                             # (Can be set on each iteration to allow 
                             # for when control flow can be returned 
-                            # to multiglods)   
-
+                            # to MultiGLODS)   
 
 
     # instantiation of multiglods optimizer 
@@ -157,7 +266,6 @@ This is an example for if you've had a difficult time with the requirements.txt 
                             func_F, constr_F,
                             opt_df,
                             parent=parent)   
-
 
     # arguments should take the form: 
     # multi_glods([[float, float, ...]], [[float, float, ...]], [[float, ...]], float, int,
@@ -216,7 +324,6 @@ The code below is an example of this process:
                 print(best_eval)
 ```
 
-
 ### Constraint Handling
 Users must create their own constraint function for their problems, if there are constraints beyond the problem bounds.  This is then passed into the constructor. If the default constraint function is used, it always returns true (which means there are no constraints).
 
@@ -226,7 +333,14 @@ This version of MultiGLODS uses random bounds to enforces boundaries on the prob
 Potentially other boundary types may be implemented, but experimentation is needed. 
 
 ### Objective Function Handling
-The optimizer minimizes the absolute value of the difference of the target outputs and the evaluated outputs. Future versions may include options for function minimization when target values are absent. 
+
+The objective function is handled in two parts. 
+
+* First, a defined function, such as one passed in from `func_F.py` (see examples), is evaluated based on current particle locations. This allows for the optimizers to be utilized in the context of 1. benchmark functions from the objective function library, 2. user defined functions, 3. replacing explicitly defined functions with outside calls to programs such as simulations or other scripts that return a matrix of evaluated outputs. 
+
+* Secondly, the actual objective function is evaluated. In the AntennaCAT set of optimizers, the objective function evaluation is either a `TARGET` or `THRESHOLD` evaluation. For a `TARGET` evaluation, which is the default behavior, the optimizer minimizes the absolute value of the difference of the target outputs and the evaluated outputs. A `THRESHOLD` evaluation includes boolean logic to determine if a 'greater than or equal to' or 'less than or equal to' or 'equal to' relation between the target outputs (or thresholds) and the evaluated outputs exist. 
+
+Future versions may include options for function minimization when target values are absent. 
 
 #### Creating a Custom Objective Function
 
@@ -295,7 +409,6 @@ def func_F(X, NO_OF_OUTS=1):
     return [F], noErrors
 ```
 
-
 #### Internal Objective Function Example
 
 There are three functions included in the repository:
@@ -361,6 +474,41 @@ Local minima at $(0.444453, -0.0630916)$
 Global minima at $(0.974857, -0.954872)$
 
 
+### Target vs. Threshold Configuration
+
+An April 2025 feature is the user ability to toggle TARGET and THRESHOLD evaluation for the optimized values. The key variables for this are:
+
+```python
+# Boolean. use target or threshold. True = THRESHOLD, False = EXACT TARGET
+evaluate_threshold = True  
+
+# array
+TARGETS = func_configs.TARGETS    # Target values for output from function configs
+# OR:
+TARGETS = [0,0,0] #manually set BASED ON PROBLEM DIMENSIONS
+
+# threshold is same dims as TARGETS
+# 0 = use target value as actual target. value should EQUAL target
+# 1 = use as threshold. value should be LESS THAN OR EQUAL to target
+# 2 = use as threshold. value should be GREATER THAN OR EQUAL to target
+#DEFAULT THRESHOLD
+THRESHOLD = np.zeros_like(TARGETS) 
+# OR
+THRESHOLD = [0,1,2] # can be any mix of TARGET and THRESHOLD  
+```
+
+To implement this, the original `self.Flist` objective function calculation has been replaced with the function `objective_function_evaluation`, which returns a numpy array.
+
+The original calculation:
+```python
+self.Flist = abs(self.targets - self.Fvals)
+```
+Where `self.Fvals` is a re-arranged and error checked returned value from the passed in function from `func_F.py` (see examples for the internal objective function or creating a custom objective function). 
+
+When using a THRESHOLD, the `Flist` value corresponding to the target is set to epsilon (the smallest system value) if the evaluated `func_F` value meets the threshold condition for that target item. If the threshold is not met, the absolute value of the difference of the target output and the evaluated output is used. With a THRESHOLD configuration, each value in the numpy array is evaluated individually, so some values can be 'greater than or equal to' the target while others are 'equal' or 'less than or equal to' the target. 
+
+
+
 ## Example Implementations
 
 ### Basic Example
@@ -397,13 +545,11 @@ The figure above shows samples of the MultiGLODS optimizer searching each of the
 
 NOTE: if you close the graph as the code is running, the code will continue to run, but the graph will not re-open.
 
-
 ## References
 
 [1] A. L. Custódio and J. F. A. Madeira, “MultiGLODS: global and local multiobjective optimization using direct search,” Journal of Global Optimization, vol. 72, no. 2, pp. 323–345, Feb. 2018, doi: https://doi.org/10.1007/s10898-018-0618-1.
 
 [2] A. L. Custódio and J. F. A. Madeira, “GLODS: Global and Local Optimization using Direct Search,” Journal of Global Optimization, vol. 62, no. 1, pp. 1–28, Aug. 2014, doi: https://doi.org/10.1007/s10898-014-0224-9.
-
 
 ## Related Publications and Repositories
 This software works as a stand-alone implementation, and as one of the optimizers integrated into AntennaCAT. Publications featuring the code as part of AntennaCAT will be added as they become public.
@@ -413,10 +559,8 @@ When citing the algorithm itself, please refer to the original publication for M
  A. L. Custódio and J. F. A. Madeira, MultiGLODS: Global and Local Multiobjective 
 Optimization using Direct Search, Journal of Global Optimization, 72 (2018), 323 - 345 PDF
 
-
 ## Licensing
 
 Unlike other optimizers in the AntennaCAT suite, which were released under GPL-2.0, this work is licensed under GPL-3.0 per the license used by the original authors of the MultiGLODS algorithm. 
-
 
 
