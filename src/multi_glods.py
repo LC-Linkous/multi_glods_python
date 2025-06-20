@@ -8,7 +8,7 @@
 #       and multiglods_ctl.py is the controller
 #
 #   Author(s): Jonathan Lundquist, Lauren Linkous 
-#   Last update: June 1, 2025
+#   Last update: June 20, 2025
 ##--------------------------------------------------------------------\
 
 
@@ -32,7 +32,8 @@ class multi_glods:
     # func, func,
     # dataFrame,
     # class obj, 
-    # bool, [int, int, ...]) 
+    # bool, [int, int, ...], 
+    # int) 
     #  
     # opt_df contains class-specific tuning parameters
     # BP: float
@@ -40,13 +41,13 @@ class multi_glods:
     # SF: int
     #
     def __init__(self, LB, UB, TARGETS, TOL, MAXIT,
-                    obj_func, constr_func, 
-                    opt_df,
-                    parent=None, 
-                    evaluate_threshold=False, obj_threshold=None,
-                    useSurrogateModel=False,  # This optimizer cannot use an internal optimizer
-                    surrogateOptimizer=None): # used for format streamlining
-
+                obj_func, constr_func, 
+                opt_df,
+                parent=None, 
+                evaluate_threshold=False, obj_threshold=None,
+                useSurrogateModel=False,  # This optimizer cannot use an internal optimizer
+                surrogateOptimizer=None,  # used for format streamlining
+                decimal_limit = 4):      # this is used in this optimizer
 
         # vars for using surrogate model
         self.useSurrogateModel = useSurrogateModel # bool for if using surrogate model
@@ -99,7 +100,7 @@ class multi_glods:
         self.init, self.run_ctl, self.alg, \
             self.prob, self.ctl, self.state = \
                 one_time_init(NO_OF_VARS, LB, UB, TARGETS, E_TOL, R_TOL, MAXIT,
-                              BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD)
+                              BP, GP, SF, obj_func, constr_func, evaluate_threshold, THRESHOLD, decimal_limit)
 
         self.prob['parent'] = parent
         self.done = 0
@@ -144,6 +145,7 @@ class multi_glods:
         else:
             return self.prob['xtemp']
         
+
     def get_convergence_data(self):
         # used the L2 norm to get the distance from target
         # distance from target at each metric (Flist) has already been handled 
