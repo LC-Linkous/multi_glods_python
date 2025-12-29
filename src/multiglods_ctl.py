@@ -79,6 +79,42 @@ def one_time_init(NO_OF_VARS, LB, UB, TARGETS, E_TOL, R_TOL, MAXIT,
 
     return init, run_ctl, alg, prob, ctl, state
 
+
+
+def check_convergence(ctl, alg, prob):
+    # Dec 28, 2025
+    # new function to check if convergence criteria are met.
+    # Returns True if converged, False otherwise.
+
+    converged = False
+    maxed = False
+    radius_converged = False
+    
+    # Check error tolerance (distance from target)
+    if np.shape(ctl['Flist'])[0] > 0:
+        if len(np.shape(ctl['Flist'])) > 1:
+            best_eval = np.linalg.norm(ctl['Flist'][:,0])
+        else:
+            best_eval = np.linalg.norm(ctl['Flist'])
+        converged = best_eval < alg['err_tol_stop']
+    
+    # Check max iterations
+    maxed = ctl['objective_iter'] >= ctl['maxit']
+    
+    # Check radius tolerance
+    try:
+        # Check if active and alfa exist and have data
+        if np.shape(prob['active'])[0] > 0 and np.shape(prob['alfa'])[0] > 0:
+            active_alfa = logical_index_1d(prob['active'], prob['alfa'])
+            if np.shape(active_alfa)[0] > 0:
+                radius_converged = np.sum(active_alfa >= alg['tol_stop']) == 0
+    except (IndexError, TypeError):
+        # If there's any issue checking radius convergence, default to False
+        radius_converged = False
+    
+    return converged or maxed or radius_converged
+
+
 def pre_objective_init_loop(ctl, prob):
     init = {"x_ini": [], "alfa_aux": [], "radius_aux": []}
 
@@ -173,6 +209,17 @@ def run_no_search_no_poll(ctl, run_ctl):
 def pre_objective_search(ctl, run_ctl, alg, prob):
     Psearch = prob['Psearch']
     xtemp = prob['xtemp']
+    
+    # CHECK CONVERGENCE BEFORE SETTING UP NEW SEARCH POINTS
+    if not ctl['poll_loop']:
+        # Before deciding to search, check if we've already converged
+        if check_convergence(ctl, alg, prob):
+            # Don't set up new search, don't modify xtemp
+            run_ctl['search'] = 0
+            prob['Psearch'] = Psearch
+            prob['xtemp'] = xtemp
+            return run_ctl, ctl, prob
+    
     if not ctl['poll_loop']:
         if not (run_ctl['iter'] or ctl['search_loop']) and \
             ((alg['search_freq'] == 0) or
@@ -256,6 +303,17 @@ def pre_objective_poll(prob, ctl, run_ctl, alg):
     count_d = ctl['count_d']
     xtemp = prob['xtemp']
     nd = ctl['nd']
+
+    # CHECK CONVERGENCE BEFORE SETTING UP NEW POLL POINTS
+    if run_ctl['poll'] and not (ctl['search_loop'] or ctl['poll_loop']):
+        if check_convergence(ctl, alg, prob):
+            # Don't set up new poll, don't modify xtemp
+            ctl['D'] = D
+            ctl['sel_level'] = sel_level
+            ctl['count_d'] = count_d
+            ctl['nd'] = nd
+            prob['xtemp'] = xtemp
+            return prob, ctl, run_ctl
 
     if run_ctl['poll'] and not (ctl['search_loop'] or ctl['poll_loop']):
         D = np.hstack([np.eye(prob['n']),-np.eye(prob['n'])])
@@ -364,20 +422,8 @@ def run_update(run_ctl, ctl, prob, alg, state):
                                            prob['alfa'],
                                            prob['alfa']*alg['beta_par'])
 
-    # return logical index in conditional
-    if (np.sum(logical_index_1d(prob['active'], prob['alfa']) >=
-               alg['tol_stop']) == 0) and not (ctl['poll_loop']
-                                               or ctl['search_loop']):
-
-        state['main_loop']['run'] = 0
-
-    # NOTE: this is a change from the original translation. 
-    #  Originally the counter was set to check
-    # if ctl['func_iter'] >= ctl['maxit']
-    # ['func_iter'] is a function iteration, but not how 
-    # how many times the objective function has been called. 
-
-    if ctl['objective_iter'] >= ctl['maxit']:
+    # Use the centralized convergence check
+    if check_convergence(ctl, alg, prob) and not (ctl['poll_loop'] or ctl['search_loop']):
         state['main_loop']['run'] = 0
 
     return run_ctl, prob, state
