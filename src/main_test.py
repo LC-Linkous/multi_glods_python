@@ -30,7 +30,8 @@ except:# for local, unit testing
 # OBJECTIVE FUNCTION SELECTION
 #import one_dim_x_test.configs_F as func_configs     # single objective, 1D input
 #import himmelblau.configs_F as func_configs         # single objective, 2D input
-import lundquist_3_var.configs_F as func_configs    # multi objective function
+#import lundquist_3_var.configs_F as func_configs    # multi objective function
+import angry_func.configs_F as func_configs
 
 
 if __name__ == "__main__":
@@ -64,7 +65,7 @@ if __name__ == "__main__":
     # optimizer specific vars
     BP = 0.5            # Beta Par
     GP = 1              # Gamma Par
-    SF = 3              # Search Frequency
+    SF = 2              # Search Frequency
 
 
     # optimizer setting values
@@ -100,7 +101,7 @@ if __name__ == "__main__":
 
     # loop to run optimizer in
     while not myGlods.complete():
-
+        #print ("While loop start")
         # step through optimizer processing
         myGlods.step(suppress_output)
 
