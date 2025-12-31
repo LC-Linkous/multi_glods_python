@@ -137,6 +137,10 @@ def select_domlevel(Plist, Flist, alfa_in, active, tol_active_points, level):
     Plist = logical_index_h2d_Plist(active != 0, Plist)
     Flist = logical_index_h2d(active != 0, Flist)
     alfa = logical_index_1d(active != 0, alfa_in)
+
+    print(f"alfa: {alfa}")
+    print(f"tol_active_points: {tol_active_points}")
+
     index = np.nonzero(alfa >= tol_active_points)[0]
     if np.size(index):
 
