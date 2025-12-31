@@ -319,7 +319,10 @@ def objective_function_evaluation(Fvals, targets, evaluate_threshold, obj_thresh
         if evaluate_threshold == True: #THRESHOLD
             ctr = 0
             for i in targets:
-                o_thres = int(obj_threshold[ctr]) #force type as err check
+                #print(f"obj_threshold[ctr]: {obj_threshold[ctr]}")
+                #o_thres = int(obj_threshold[ctr]) #force type as err check
+                o_thres = int(np.squeeze(obj_threshold[ctr])) #force type as err check, squeeze to get scalar
+                # o_thres = int(obj_threshold[ctr].item()) #force type as err check
                 t = targets[ctr]
                 fv = Fvals[ctr]
 
