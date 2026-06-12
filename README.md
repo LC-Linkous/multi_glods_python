@@ -65,7 +65,7 @@ From [jonathan46000's] original main branch [multi_glods_python README:](https:/
 
 **State Machine Structure**
 
-The [State Machine-based Structure](#state-machine-based-structure) section explains the general structure of the state machine approach and how the objective function is called from the wrapper. 
+The [State Machine-based Structure](#state-machine-based-structure) section explains the general structure of the state machine approach and how the objective function is called from the wrapper. Extensive work has gone into decoupling parts of the algorithm into the statemachine, but that does mean some options from the original algorithm were not implemented in Python.
 
 **Iteration Counting**
 

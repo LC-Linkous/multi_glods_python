@@ -114,9 +114,15 @@ class multi_glods:
         
    
     def call_objective(self, allow_update):
+        # evaluates the objective function at the pending point (if the
+        # state machine has marked one) AND computes the target/threshold
+        # fitness (Ftemp). After this returns, get_latest_eval() and
+        # converged() reflect the evaluation that just happened, BEFORE
+        # the next step() merges it into the archive and advances.
         self.state, self.prob, noErrorBool = f_eval_objective_call(self.state, 
                                                       self.prob, 
                                                       self.ctl,
+                                                      self.alg,
                                                       allow_update)
         return noErrorBool
 
@@ -164,10 +170,18 @@ class multi_glods:
         return iteration, best_eval 
 
     def get_optimized_soln(self):
+        # if a pending (not yet merged) evaluation is what triggered
+        # convergence, report THAT point rather than the stale archive
+        latest = self.get_latest_eval()
+        if (latest is not None) and (latest < self.alg['err_tol_stop']):
+            return np.vstack(self.prob['xtemp'])
         soln = np.vstack(self.prob['Plist'][:,0])
         return soln
     
     def get_optimized_outs(self):
+        latest = self.get_latest_eval()
+        if (latest is not None) and (latest < self.alg['err_tol_stop']):
+            return np.vstack(self.prob['Ftemp'])
         soln = np.vstack(self.ctl['Flist'][:,0])
         return soln
     
@@ -182,8 +196,25 @@ class multi_glods:
         return x_locations
 
     # funcs from other optimizers in the AntennaCAT set for stop conditions
+
+    def get_latest_eval(self):
+        # L2 norm of the fitness of the MOST RECENTLY evaluated point
+        # (the pending Ftemp computed in call_objective), as opposed to
+        # get_convergence_data(), which reads the merged archive (Flist).
+        # state['eval_return'] == 1 means there is a fresh, un-consumed
+        # evaluation waiting for the next step().
+        if self.state['eval_return'] and np.shape(self.prob['Ftemp'])[0] > 0:
+            return np.linalg.norm(self.prob['Ftemp'])
+        return None
+
     def converged(self):
-       
+        # check the pending (just-evaluated, not yet merged) point first.
+        # this lets the controller terminate on the evaluation that hit
+        # the tolerance WITHOUT step() consuming it and advancing.
+        latest = self.get_latest_eval()
+        if (latest is not None) and (latest < self.alg['err_tol_stop']):
+            return True
+
         if np.shape(self.ctl['Flist'])[0] == 0:
             return False
         elif len(np.shape(self.ctl['Flist'])) > 1:

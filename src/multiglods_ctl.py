@@ -115,15 +115,65 @@ def check_convergence(ctl, alg, prob):
     return converged or maxed or radius_converged
 
 
-def pre_objective_init_loop(ctl, prob):
+def pre_objective_init_loop(ctl, prob, alg=None):
     init = {"x_ini": [], "alfa_aux": [], "radius_aux": []}
 
-    ctl['i'] = 0
-    if ctl['i'] <= np.shape(prob['Pini'])[1]:
+    # BUGFIX (June 2026): previously this function reset ctl['i'] to 0 and
+    # always proposed the FIRST Pini point (the lower-bound corner). If
+    # that point violated constr_F, the objective call was never marked,
+    # post_objective_init_loop() ended the init phase before ANY point had
+    # been evaluated, and prob['Plist']/ctl['Flist'] stayed empty with
+    # prob['alfa']/prob['active'] left as their scalar 0 placeholders from
+    # one_time_init(). The first poll step then crashed in
+    # select_domlevel():
+    #   ValueError: Calling nonzero on 0d arrays is not allowed.
+    # Now the initial point is selected feasibility-aware: infeasible Pini
+    # columns are skipped, and if EVERY Pini point is infeasible, x_ini is
+    # respawned at random in-bounds locations until a feasible point is
+    # found (matching the random respawn behavior of the swarm optimizers
+    # in the AntennaCAT set). The init phase therefore always evaluates at
+    # least one feasible point before the main loop starts.
+    # NOTE: 'alg' is optional for backwards compatibility. Without it,
+    # the bounds are unknown here and the original (reset to Pini column
+    # 0) behavior is used.
+    if alg is None:
+        ctl['i'] = 0
+        if ctl['i'] <= np.shape(prob['Pini'])[1]:
+            if np.shape(prob['Pini'])[0] == 1:
+                init['x_ini'] = prob['Pini']
+            else:
+                init['x_ini'] = np.vstack(prob['Pini'][:, ctl['i']])
+        return init, ctl
+
+    n_pini = np.shape(prob['Pini'])[1]
+
+    # advance ctl['i'] past infeasible Pini columns. for fully feasible
+    # problems ctl['i'] stays 0 and this matches the original behavior
+    while ctl['i'] < n_pini:
         if np.shape(prob['Pini'])[0] == 1:
-            init['x_ini'] = prob['Pini']
+            x_try = prob['Pini']
         else:
-            init['x_ini'] = np.vstack(prob['Pini'][:, ctl['i']])
+            x_try = np.vstack(prob['Pini'][:, ctl['i']])
+        if feasible(x_try, alg['ubound'], alg['lbound'], prob['n'], ctl):
+            init['x_ini'] = x_try
+            return init, ctl
+        ctl['i'] = ctl['i'] + 1
+
+    # every Pini point was infeasible. respawn at random in-bounds
+    # locations until a feasible point is found. cap ctl['i'] so the
+    # state machine's (ctl['i'] <= np.shape(prob['Pini'])[1]) gates
+    # stay open for the evaluation of the respawned point
+    ctl['i'] = n_pini
+    rng = default_rng()
+    x_rand = []
+    tries = 0
+    while tries < 1000:
+        tries = tries + 1
+        x_rand = alg['lbound'] + \
+            (alg['ubound'] - alg['lbound']) * rng.random((prob['n'], 1))
+        if feasible(x_rand, alg['ubound'], alg['lbound'], prob['n'], ctl):
+            break
+    init['x_ini'] = x_rand
 
     return init, ctl
 

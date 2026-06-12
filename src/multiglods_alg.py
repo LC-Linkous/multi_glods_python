@@ -138,8 +138,12 @@ def select_domlevel(Plist, Flist, alfa_in, active, tol_active_points, level):
     Flist = logical_index_h2d(active != 0, Flist)
     alfa = logical_index_1d(active != 0, alfa_in)
 
-    print(f"alfa: {alfa}")
-    print(f"tol_active_points: {tol_active_points}")
+    # NUMPY 2 SAFETY (June 2026): alfa can arrive here as a 0-d scalar
+    # (e.g. the scalar placeholders from one_time_init, or a single-point
+    # list collapsed by the logical indexing helpers). np.nonzero on a
+    # 0-d array raises a ValueError on NumPy >= 1.25, so coerce to a
+    # 1-d array before the comparison.
+    alfa = np.atleast_1d(np.asarray(alfa))
 
     index = np.nonzero(alfa >= tol_active_points)[0]
     if np.size(index):
@@ -201,6 +205,15 @@ def select_pollcenter(Plist, Flist, alfa, radius, active, tol_active_points, num
                            tol_active_points, level)
 
         level = level + 1
+
+        # SAFETY (June 2026): if there are no active points with a step
+        # size above the radius tolerance, select_domlevel returns
+        # sel_level = 0 with empty lists regardless of the level, and
+        # this loop would never exit. Return sel_level = 0 with the
+        # lists unchanged so the caller can skip the poll step; the
+        # unsuccessful iteration count then drives a search step instead.
+        if (not sel_level) and (np.size(alfa_aux) == 0):
+            return 0, Plist, Flist, alfa, radius, active
 
     index = alfa_aux.argsort()[::-1]
 

@@ -227,26 +227,34 @@ def  f_eval(state, xlist, prob, location):
     return state, prob
 
 # handle objective function return at appropriate call location
+# NOTE: decoupled. The fitness evaluation (Ftemp) is now computed in
+# f_eval_objective_call() at the time the objective is called, so the
+# controller can check termination conditions against FRESH data
+# before the next step() consumes it and advances the state machine.
+# This function is now purely the state handshake that lets the state
+# machine resume at the matching call location (1=init, 2=search, 3=poll).
 def f_eval_return(state, prob, alg, location):
     if state['eval_return'] and (state['location'] == location):
         state['eval_return'] = 0
 
-        ## We can either use the distance to target, 
-        ## or include a threshold evaulation. 
-
-
-        # The values for 'Ftemp' will 
-        # be set to ctl['Flist'] in post_objective_init_loop
-
-        prob['Ftemp'] = objective_function_evaluation(prob['FValtemp'], 
-                                                    alg['targets'],
-                                                    alg['evaluate_threshold'],
-                                                    alg['threshold'])
-
     return state, prob
 
 # call objective function, allow it to update when desired
-def f_eval_objective_call(state, prob, ctl, allow_update):
+def f_eval_objective_call(state, prob, ctl, alg, allow_update):
+    # DECOUPLE NOTE:
+    # This function now does ALL of the data handling for an objective
+    # function evaluation: the raw call (FValtemp) AND the target/threshold
+    # fitness evaluation (Ftemp). Previously the Ftemp calculation happened
+    # inside the next step() call (in f_eval_return), which meant:
+    #   1) After call_objective() returned, the wrapper's convergence data
+    #      (Flist, Ftemp) was one evaluation STALE.
+    #   2) The same step() call that ingested the data also merged it,
+    #      ran run_update(), and queued the next evaluation - so there was
+    #      no point where a controller could check termination conditions
+    #      against the fresh evaluation before the optimizer advanced.
+    # Now step() purely CONSUMES already-evaluated data (like pso_basic:
+    # check previous data, then move), and call_objective() purely
+    # EVALUATES, gated by allow_update.
 
     noErrorBool = True #this is pretty stable, 
                         # so default of true when NOT evaluating 
@@ -255,39 +263,33 @@ def f_eval_objective_call(state, prob, ctl, allow_update):
 
     if state['evaluate']:
         # NOTE: this is a change from the original multiglods_helpers.py
-        # the new objective functioon configuration takes a horizontal array.
-        # prob['FValtemp'], noErrorBool = ctl['obj_func'](prob['parent'], prob['xtemp'])
+        # the new objective function configuration takes a horizontal array.
         FVals, noErrorBool = ctl['obj_func'](np.hstack(prob['xtemp']))
-        # NOTE: multiGLODS needs a vertically stacked array
-        # print("SHAPE FVALS in multiglods_holders")
-        # print(FVals)
-        # print(np.shape(FVals))
         if noErrorBool == True:
             # this is the standard setup/shape for the AntennaCAT optimizer set. 
-            # left here for featuing matching between optimizers. 
+            # left here for feature matching between optimizers. 
             prob['FValtemp'] = np.array(FVals).reshape(-1, 1)
-            # print(prob['FValtemp'])
-            # print(np.shape(prob['FValtemp']))   
 
             # adjust the fitness values output to be vertical to match multiGLODS expectations
             prob['FValtemp'] = np.vstack(prob['FValtemp'])  
 
-
-
             if allow_update:
+                # evaluate fitness vs. target/threshold NOW, so the
+                # controller sees fresh data before the next step().
+                # The values for 'Ftemp' are merged into ctl['Flist'] by
+                # the post_objective_* functions when step() resumes at
+                # the matching state['location'].
+                prob['Ftemp'] = objective_function_evaluation(prob['FValtemp'],
+                                                              alg['targets'],
+                                                              alg['evaluate_threshold'],
+                                                              alg['threshold'])
+
                 state['evaluate'] = 0
                 state['eval_return'] = 1
                 ctl['objective_iter'] = ctl['objective_iter']  + 1
 
-
         else:
             print("ERROR: error in evaluation of the objective function. Check evaluation")
-
-
-        # if allow_update:
-        #     state['evaluate'] = 0
-        #     state['eval_return'] = 1
-        #     ctl['objective_iter'] = ctl['objective_iter']  + 1
 
     return state, prob, noErrorBool
  

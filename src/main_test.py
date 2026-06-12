@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # Constant variables
     R_TOL = 10 ** -6      # Convergence Tolerance (This is a radius 
                           # based tolerance, not target based tolerance)
-    E_TOL = 10 ** -15     # Convergence Error Tolerance                         
+    E_TOL = 10 ** -5     # Convergence Error Tolerance                         
     MAXIT = 10000         # Maximum allowed iterations  
 
     # Objective function dependent variables

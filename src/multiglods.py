@@ -62,7 +62,10 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
         if state['init'] and not np.shape(ctl['Flist'])[0] \
            and not ctl['eval'] and not state['evaluate'] \
             and not state['eval_return']:
-            init, ctl = pre_objective_init_loop(ctl, prob)
+            # BUGFIX (June 2026): alg is now passed in so the initial
+            # point selection can skip infeasible Pini points (see
+            # pre_objective_init_loop in multiglods_ctl.py)
+            init, ctl = pre_objective_init_loop(ctl, prob, alg)
             
 
         # initialization objective functionc call
@@ -146,5 +149,3 @@ def multiglods(init, run_ctl, alg, prob, ctl, state, suppress_output):
 
         if state['init'] or state['post_init'] or state['main_loop']['run']:
             return 0, init, run_ctl, alg, prob, ctl, state
-
-        
