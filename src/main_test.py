@@ -30,8 +30,8 @@ except:# for local, unit testing
 # OBJECTIVE FUNCTION SELECTION
 #import one_dim_x_test.configs_F as func_configs     # single objective, 1D input
 #import himmelblau.configs_F as func_configs         # single objective, 2D input
-#import lundquist_3_var.configs_F as func_configs    # multi objective function
-import angry_func.configs_F as func_configs
+import lundquist_3_var.configs_F as func_configs    # multi objective function
+#import angry_func.configs_F as func_configs
 
 
 if __name__ == "__main__":
